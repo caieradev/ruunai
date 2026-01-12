@@ -1,0 +1,30 @@
+{
+  "name": "RuunAI - Your AI Running Coach",
+  "short_name": "RuunAI",
+  "description": "Get a personalized running training plan powered by AI. Adaptive, data-driven coaching that evolves with your progress.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "fitness", "sports"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Start Training",
+      "short_name": "Train",
+      "description": "Access your personalized training plan",
+      "url": "/#start",
+      "icons": []
+    }
+  ],
+  "prefer_related_applications": false
+}
