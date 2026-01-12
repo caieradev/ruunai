@@ -1,0 +1,27 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0A0A0A"/>
+  <text
+    x="600"
+    y="290"
+    text-anchor="middle"
+    font-family="system-ui, sans-serif"
+    font-size="120"
+    font-weight="800"
+    letter-spacing="-0.02em"
+  >
+    <tspan fill="#FFFFFF">Ruun</tspan>
+    <tspan fill="#00E5A0">AI</tspan>
+  </text>
+  <text
+    x="600"
+    y="355"
+    text-anchor="middle"
+    font-family="system-ui, sans-serif"
+    font-size="40"
+    font-weight="400"
+    letter-spacing="-0.01em"
+    fill="#999999"
+  >
+    Your AI running coach, built for you.
+  </text>
+</svg>
