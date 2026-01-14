@@ -20,6 +20,7 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
   const [mode, setMode] = useState<'login' | 'signup'>(initialMode)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [fullName, setFullName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -44,6 +45,12 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
     const supabase = getSupabaseBrowserClient()
 
     if (mode === 'signup') {
+      if (password !== confirmPassword) {
+        setError('Passwords do not match')
+        setLoading(false)
+        return
+      }
+
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -129,6 +136,7 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
     setMode(newMode)
     setError(null)
     setShowCheckEmail(false)
+    setConfirmPassword('')
   }
 
   if (showCheckEmail) {
@@ -209,6 +217,17 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
           placeholder={mode === 'signup' ? 'Create a password (min 6 characters)' : 'Enter your password'}
           required
         />
+
+        {mode === 'signup' && (
+          <Input
+            type="password"
+            label="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirm your password"
+            required
+          />
+        )}
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
