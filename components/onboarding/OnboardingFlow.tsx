@@ -1,12 +1,14 @@
 'use client'
 
+import { useState, useEffect, useCallback } from 'react'
 import { useOnboarding } from '@/lib/onboarding/context'
 import { getStepNumber, getTotalSteps, getNextStep, getPreviousStep } from '@/lib/onboarding/steps'
 import { StepId } from '@/lib/onboarding/types'
 import Button from '@/components/ui/Button'
 import ProgressBar from '@/components/ui/ProgressBar'
 import Card from '@/components/ui/Card'
-import { useRouter } from 'next/navigation'
+import PlanGeneratingLoader from './PlanGeneratingLoader'
+import PlanSuccessScreen from './PlanSuccessScreen'
 
 import GoalStep from './steps/GoalStep'
 import EventDetailsStep from './steps/EventDetailsStep'
@@ -70,9 +72,33 @@ const stepDescriptions: Record<StepId, string> = {
   review: 'Confirm your information before we generate your plan',
 }
 
+type FlowState = 'quiz' | 'loading' | 'success'
+
+interface UserStatus {
+  id?: string
+  email_confirmed?: boolean
+}
+
 export default function OnboardingFlow() {
   const { data, currentStep, setCurrentStep, resetOnboarding } = useOnboarding()
-  const router = useRouter()
+  const [flowState, setFlowState] = useState<FlowState>('quiz')
+  const [userStatus, setUserStatus] = useState<UserStatus | null>(null)
+
+  // Check auth status on mount
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const response = await fetch('/api/me')
+        const data = await response.json()
+        setUserStatus(data.id ? data : null)
+      } catch {
+        setUserStatus(null)
+      }
+    }
+    checkAuth()
+  }, [])
+
+  const isLoggedIn = !!(userStatus?.id && userStatus?.email_confirmed)
 
   const StepComponent = stepComponents[currentStep]
   const stepNumber = getStepNumber(currentStep, data)
@@ -82,7 +108,6 @@ export default function OnboardingFlow() {
   const isReviewStep = currentStep === 'review'
 
   const canGoNext = () => {
-    // Add validation logic for each step
     switch (currentStep) {
       case 'goal':
         return !!data.goal
@@ -122,13 +147,41 @@ export default function OnboardingFlow() {
   }
 
   const handleComplete = () => {
-    console.log('=== ONBOARDING COMPLETE ===')
-    console.log('User Profile Data:', JSON.stringify(data, null, 2))
-    console.log('===========================')
+    setFlowState('loading')
+  }
 
-    // Show success message and redirect
-    alert('Your training profile has been created! Check the console for the data.')
-    router.push('/app')
+  const handleLoaderComplete = useCallback(() => {
+    setFlowState('success')
+  }, [])
+
+  const handleSaveAndContinue = useCallback(async () => {
+    try {
+      const response = await fetch('/api/onboarding/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payload: data }),
+      })
+
+      if (response.ok) {
+        resetOnboarding()
+      }
+    } catch (error) {
+      console.error('Failed to save onboarding data:', error)
+    }
+  }, [data, resetOnboarding])
+
+  // Render based on flow state
+  if (flowState === 'loading') {
+    return <PlanGeneratingLoader onComplete={handleLoaderComplete} />
+  }
+
+  if (flowState === 'success') {
+    return (
+      <PlanSuccessScreen
+        isLoggedIn={isLoggedIn}
+        onSaveAndContinue={isLoggedIn ? handleSaveAndContinue : undefined}
+      />
+    )
   }
 
   return (
