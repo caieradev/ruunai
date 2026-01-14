@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import Header from '@/components/Header'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -13,10 +14,12 @@ interface DashboardContentProps {
 
 export default function DashboardContent({ fullName }: DashboardContentProps) {
   const router = useRouter()
+  const t = useTranslations('dashboard')
+  const tCommon = useTranslations('common')
   const [loading, setLoading] = useState<'reset' | 'logout' | null>(null)
 
   const handleResetOnboarding = async () => {
-    if (!confirm('Are you sure you want to reset your onboarding and start over?')) {
+    if (!confirm(t('resetConfirm'))) {
       return
     }
 
@@ -60,12 +63,12 @@ export default function DashboardContent({ fullName }: DashboardContentProps) {
   }
 
   const stats = [
-    { icon: Activity, label: 'Weekly Distance', value: '0 km', color: 'text-accent-primary' },
-    { icon: Calendar, label: 'Training Days', value: '0/7', color: 'text-accent-secondary' },
-    { icon: TrendingUp, label: 'Progress', value: '0%', color: 'text-accent-primary' },
+    { icon: Activity, label: t('weeklyDistance'), value: '0 km', color: 'text-accent-primary' },
+    { icon: Calendar, label: t('trainingDays'), value: '0/7', color: 'text-accent-secondary' },
+    { icon: TrendingUp, label: t('progress'), value: '0%', color: 'text-accent-primary' },
   ]
 
-  const displayName = fullName || 'Runner'
+  const displayName = fullName || tCommon('runner')
 
   return (
     <>
@@ -74,9 +77,9 @@ export default function DashboardContent({ fullName }: DashboardContentProps) {
         <div className="max-w-6xl mx-auto">
           <div className="mb-8 animate-fade-in">
             <h1 className="text-3xl sm:text-4xl font-bold text-text-primary mb-2">
-              Welcome back, <span className="gradient-text">{displayName}</span>
+              {t('welcomeBack')} <span className="gradient-text">{displayName}</span>
             </h1>
-            <p className="text-text-secondary">Your personalized training dashboard</p>
+            <p className="text-text-secondary">{t('tagline')}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-slide-up">
@@ -99,12 +102,12 @@ export default function DashboardContent({ fullName }: DashboardContentProps) {
             <Card>
               <h2 className="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-accent-primary" />
-                Your Training Plan
+                {t('yourTrainingPlan')}
               </h2>
               <div className="py-12 text-center">
-                <p className="text-text-muted mb-4">Your AI-generated training plan will appear here</p>
+                <p className="text-text-muted mb-4">{t('planPlaceholder')}</p>
                 <p className="text-sm text-text-secondary">
-                  We&apos;re building your personalized plan based on your profile
+                  {t('planBuilding')}
                 </p>
               </div>
             </Card>
@@ -112,12 +115,12 @@ export default function DashboardContent({ fullName }: DashboardContentProps) {
             <Card>
               <h2 className="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-accent-primary" />
-                Recent Activity
+                {t('recentActivity')}
               </h2>
               <div className="py-12 text-center">
-                <p className="text-text-muted mb-4">No activities yet</p>
+                <p className="text-text-muted mb-4">{t('noActivities')}</p>
                 <p className="text-sm text-text-secondary">
-                  Connect your running app to see your workouts here
+                  {t('connectApp')}
                 </p>
               </div>
             </Card>
@@ -129,16 +132,16 @@ export default function DashboardContent({ fullName }: DashboardContentProps) {
                 <Settings className="w-6 h-6 text-accent-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-text-primary mb-2">Quick Actions</h3>
+                <h3 className="text-lg font-semibold text-text-primary mb-2">{t('quickActions')}</h3>
                 <div className="flex flex-wrap gap-3">
                   <Button variant="secondary" size="sm">
-                    Update Profile
+                    {t('updateProfile')}
                   </Button>
                   <Button variant="secondary" size="sm">
-                    Adjust Plan
+                    {t('adjustPlan')}
                   </Button>
                   <Button variant="secondary" size="sm">
-                    Connect App
+                    {t('connectAppBtn')}
                   </Button>
                   <Button
                     variant="outline"
@@ -146,7 +149,7 @@ export default function DashboardContent({ fullName }: DashboardContentProps) {
                     onClick={handleResetOnboarding}
                     disabled={loading === 'reset'}
                   >
-                    {loading === 'reset' ? 'Resetting...' : 'Reset Onboarding'}
+                    {loading === 'reset' ? t('resetting') : t('resetOnboarding')}
                   </Button>
                   <Button
                     variant="outline"
@@ -156,7 +159,7 @@ export default function DashboardContent({ fullName }: DashboardContentProps) {
                     className="text-red-400 border-red-400/50 hover:bg-red-400/10"
                   >
                     <LogOut className="w-4 h-4 mr-1" />
-                    {loading === 'logout' ? 'Logging out...' : 'Log out'}
+                    {loading === 'logout' ? t('loggingOut') : t('logOut')}
                   </Button>
                 </div>
               </div>
@@ -164,13 +167,13 @@ export default function DashboardContent({ fullName }: DashboardContentProps) {
           </Card>
 
           <div className="mt-8 p-6 rounded-lg border-2 border-accent-primary/20 bg-accent-primary/5 animate-slide-up">
-            <h3 className="text-lg font-semibold text-text-primary mb-2">Coming Soon</h3>
+            <h3 className="text-lg font-semibold text-text-primary mb-2">{t('comingSoon')}</h3>
             <ul className="text-sm text-text-secondary space-y-2">
-              <li>• AI-generated personalized training plans</li>
-              <li>• Real-time plan adjustments based on your progress</li>
-              <li>• Integration with Strava, Garmin, and other running apps</li>
-              <li>• Detailed analytics and performance insights</li>
-              <li>• Training plan export (PDF, Calendar)</li>
+              <li>• {t('comingSoonItems.aiPlans')}</li>
+              <li>• {t('comingSoonItems.realTime')}</li>
+              <li>• {t('comingSoonItems.integration')}</li>
+              <li>• {t('comingSoonItems.analytics')}</li>
+              <li>• {t('comingSoonItems.export')}</li>
             </ul>
           </div>
         </div>

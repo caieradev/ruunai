@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 import Card from '@/components/ui/Card'
 import Input from '@/components/ui/Input'
@@ -28,6 +29,7 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
   const [resendCooldown, setResendCooldown] = useState(0)
 
   const router = useRouter()
+  const t = useTranslations('auth')
 
   // Handle resend cooldown timer
   useEffect(() => {
@@ -45,8 +47,14 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
     const supabase = getSupabaseBrowserClient()
 
     if (mode === 'signup') {
+      if (!fullName.trim()) {
+        setError(t('nameRequired'))
+        setLoading(false)
+        return
+      }
+
       if (password !== confirmPassword) {
-        setError('Passwords do not match')
+        setError(t('passwordsDontMatch'))
         setLoading(false)
         return
       }
@@ -147,12 +155,12 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
             <Mail className="w-8 h-8 text-accent-primary" />
           </div>
         </div>
-        <h2 className="text-2xl font-bold text-text-primary mb-2">Check your email</h2>
+        <h2 className="text-2xl font-bold text-text-primary mb-2">{t('checkEmail')}</h2>
         <p className="text-text-secondary mb-2">
-          We sent a confirmation link to <strong className="text-text-primary">{email}</strong>
+          {t('sentConfirmation')} <strong className="text-text-primary">{email}</strong>
         </p>
         <p className="text-sm text-text-muted mb-6">
-          Click the link in your email to activate your account. Also check your spam folder.
+          {t('clickLink')}
         </p>
 
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
@@ -163,14 +171,14 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
           disabled={loading || resendCooldown > 0}
           className="w-full"
         >
-          {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend email'}
+          {resendCooldown > 0 ? t('resendIn', { seconds: resendCooldown }) : t('resendEmail')}
         </Button>
 
         <button
           onClick={() => setShowCheckEmail(false)}
           className="mt-4 text-sm text-text-muted hover:text-text-secondary transition-colors"
         >
-          Use a different email
+          {t('useDifferentEmail')}
         </button>
       </Card>
     )
@@ -180,12 +188,10 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
     <Card>
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-text-primary mb-2">
-          {mode === 'signup' ? 'Create your account' : 'Welcome back'}
+          {mode === 'signup' ? t('createYourAccount') : t('welcomeBack')}
         </h1>
         <p className="text-text-secondary">
-          {mode === 'signup'
-            ? 'Save your plan and track your progress'
-            : 'Log in to access your training plan'}
+          {mode === 'signup' ? t('saveYourPlan') : t('loginToAccess')}
         </p>
       </div>
 
@@ -193,38 +199,39 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
         {mode === 'signup' && (
           <Input
             type="text"
-            label="Full Name"
+            label={t('fullName')}
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            placeholder="Your name"
+            placeholder={t('fullNamePlaceholder')}
+            required
           />
         )}
 
         <Input
           type="email"
-          label="Email"
+          label={t('email')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
+          placeholder={t('emailPlaceholder')}
           required
         />
 
         <Input
           type="password"
-          label="Password"
+          label={t('password')}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder={mode === 'signup' ? 'Create a password (min 6 characters)' : 'Enter your password'}
+          placeholder={mode === 'signup' ? t('passwordPlaceholderCreate') : t('passwordPlaceholderEnter')}
           required
         />
 
         {mode === 'signup' && (
           <Input
             type="password"
-            label="Confirm Password"
+            label={t('confirmPassword')}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Confirm your password"
+            placeholder={t('confirmPasswordPlaceholder')}
             required
           />
         )}
@@ -232,7 +239,7 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <Button type="submit" className="w-full" size="lg" disabled={loading}>
-          {loading ? 'Loading...' : mode === 'signup' ? 'Create Account' : 'Log In'}
+          {loading ? t('loading') : mode === 'signup' ? t('createAccount') : t('logIn')}
         </Button>
       </form>
 
@@ -240,22 +247,22 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
         <p className="text-sm text-text-secondary">
           {mode === 'signup' ? (
             <>
-              Already have an account?{' '}
+              {t('alreadyHaveAccount')}{' '}
               <button
                 onClick={() => switchMode('login')}
                 className="text-accent-primary hover:text-accent-hover transition-colors"
               >
-                Log in
+                {t('logIn')}
               </button>
             </>
           ) : (
             <>
-              Don&apos;t have an account?{' '}
+              {t('dontHaveAccount')}{' '}
               <button
                 onClick={() => switchMode('signup')}
                 className="text-accent-primary hover:text-accent-hover transition-colors"
               >
-                Sign up
+                {t('signUp')}
               </button>
             </>
           )}

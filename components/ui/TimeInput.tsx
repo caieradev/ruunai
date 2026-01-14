@@ -2,6 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 
 interface TimeInputProps {
   label?: string
@@ -16,10 +17,11 @@ export default function TimeInput({
   label,
   value,
   onChange,
-  placeholder = 'e.g., 50:00 or 1:30:25',
+  placeholder,
   error,
   className
 }: TimeInputProps) {
+  const t = useTranslations('inputs.time')
   const [displayValue, setDisplayValue] = useState(value)
 
   useEffect(() => {
@@ -96,7 +98,7 @@ export default function TimeInput({
         type="text"
         value={displayValue}
         onChange={handleChange}
-        placeholder={placeholder}
+        placeholder={placeholder || t('placeholder')}
         className={cn(
           'w-full max-w-full min-w-0 rounded-lg border bg-dark-surface px-4 py-3 text-text-primary placeholder:text-text-muted transition-colors',
           'focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-dark-bg',
@@ -107,11 +109,11 @@ export default function TimeInput({
       />
       {(error || !isValid) && (
         <p className="mt-2 text-sm text-red-500">
-          {error || 'Please enter a valid time format (MM:SS or H:MM:SS)'}
+          {error || t('invalidFormat')}
         </p>
       )}
       <p className="mt-1 text-xs text-text-muted">
-        Format: MM:SS (e.g., 50:00) or H:MM:SS (e.g., 1:30:25)
+        {t('formatHint')}
       </p>
     </div>
   )

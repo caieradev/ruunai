@@ -1,20 +1,14 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useOnboarding } from '@/lib/onboarding/context'
 import Checkbox from '@/components/ui/Checkbox'
 
-const daysOfWeek = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-]
+const dayKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const
 
 export default function PreferredDaysStep() {
   const { data, updateData } = useOnboarding()
+  const t = useTranslations('onboarding')
   const selectedDays = data.preferredDays || []
 
   const toggleDay = (day: string) => {
@@ -26,16 +20,19 @@ export default function PreferredDaysStep() {
 
   return (
     <div className="space-y-3">
-      {daysOfWeek.map((day) => (
-        <Checkbox
-          key={day}
-          label={day}
-          checked={selectedDays.includes(day)}
-          onChange={() => toggleDay(day)}
-        />
-      ))}
+      {dayKeys.map((dayKey) => {
+        const dayLabel = t(`weekDays.${dayKey}`)
+        return (
+          <Checkbox
+            key={dayKey}
+            label={dayLabel}
+            checked={selectedDays.includes(dayKey)}
+            onChange={() => toggleDay(dayKey)}
+          />
+        )
+      })}
       <p className="text-sm text-text-muted mt-6">
-        Select your preferred training days. This is optional and flexible.
+        {t('preferredDaysHint')}
       </p>
     </div>
   )

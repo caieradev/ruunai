@@ -1,18 +1,20 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useOnboarding } from '@/lib/onboarding/context'
 import Checkbox from '@/components/ui/Checkbox'
 
-const equipmentOptions = [
-  { value: 'treadmill', label: 'Treadmill', description: 'Access to indoor running' },
-  { value: 'track', label: 'Track', description: 'Access to a running track' },
-  { value: 'gym', label: 'Gym', description: 'Gym membership for cross-training' },
-  { value: 'hills', label: 'Hills/Trails', description: 'Access to varied terrain' },
-]
-
 export default function EquipmentStep() {
   const { data, updateData } = useOnboarding()
+  const t = useTranslations('onboarding.equipment')
   const selectedEquipment = data.equipment || []
+
+  const equipmentOptions = [
+    { value: 'treadmill', label: t('treadmill'), description: t('treadmillDesc') },
+    { value: 'track', label: t('track'), description: t('trackDesc') },
+    { value: 'gym', label: t('gym'), description: t('gymDesc') },
+    { value: 'hills', label: t('hills'), description: t('hillsDesc') },
+  ]
 
   const toggleEquipment = (equipment: string) => {
     const newEquipment = selectedEquipment.includes(equipment)
@@ -33,7 +35,7 @@ export default function EquipmentStep() {
         />
       ))}
       <p className="text-sm text-text-muted mt-6">
-        This is optional. We can create a great plan with just outdoor running.
+        {t('hint')}
       </p>
     </div>
   )

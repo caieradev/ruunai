@@ -1,48 +1,34 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useOnboarding } from '@/lib/onboarding/context'
 import RadioGroup from '@/components/ui/RadioGroup'
 import { PlanStyle, PlanFlexibility, IntensityTolerance } from '@/lib/onboarding/types'
 
-const styleOptions = [
-  {
-    value: 'TIME_BASED',
-    label: 'Time-based',
-    description: 'Workouts specified by duration (e.g., run 30 minutes)',
-  },
-  {
-    value: 'DISTANCE_BASED',
-    label: 'Distance-based',
-    description: 'Workouts specified by distance (e.g., run 5 km)',
-  },
-]
-
-const flexibilityOptions = [
-  {
-    value: 'STRUCTURED',
-    label: 'Structured',
-    description: 'Specific workouts on specific days',
-  },
-  {
-    value: 'FLEXIBLE',
-    label: 'Flexible',
-    description: 'You choose which workout to do each day',
-  },
-]
-
-const intensityOptions = [
-  { value: 'LOW', label: 'Low', description: 'Gradual progression, more recovery' },
-  { value: 'MEDIUM', label: 'Medium', description: 'Balanced approach' },
-  { value: 'HIGH', label: 'High', description: 'Aggressive progression, push limits' },
-]
-
 export default function PlanPreferencesStep() {
   const { data, updateData } = useOnboarding()
+  const t = useTranslations('onboarding.planPreferences')
+
+  const styleOptions = [
+    { value: 'TIME_BASED', label: t('timeBased'), description: t('timeBasedDesc') },
+    { value: 'DISTANCE_BASED', label: t('distanceBased'), description: t('distanceBasedDesc') },
+  ]
+
+  const flexibilityOptions = [
+    { value: 'STRUCTURED', label: t('structured'), description: t('structuredDesc') },
+    { value: 'FLEXIBLE', label: t('flexible'), description: t('flexibleDesc') },
+  ]
+
+  const intensityOptions = [
+    { value: 'LOW', label: t('low'), description: t('lowDesc') },
+    { value: 'MEDIUM', label: t('medium'), description: t('mediumDesc') },
+    { value: 'HIGH', label: t('high'), description: t('highDesc') },
+  ]
 
   return (
     <div className="space-y-8">
       <div>
-        <h3 className="text-lg font-semibold text-text-primary mb-4">Plan Style</h3>
+        <h3 className="text-lg font-semibold text-text-primary mb-4">{t('planStyle')}</h3>
         <RadioGroup
           options={styleOptions}
           value={data.planStyle || ''}
@@ -52,7 +38,7 @@ export default function PlanPreferencesStep() {
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold text-text-primary mb-4">Flexibility</h3>
+        <h3 className="text-lg font-semibold text-text-primary mb-4">{t('flexibility')}</h3>
         <RadioGroup
           options={flexibilityOptions}
           value={data.planFlexibility || ''}
@@ -62,7 +48,7 @@ export default function PlanPreferencesStep() {
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold text-text-primary mb-4">Intensity Tolerance</h3>
+        <h3 className="text-lg font-semibold text-text-primary mb-4">{t('intensityTolerance')}</h3>
         <RadioGroup
           options={intensityOptions}
           value={data.intensityTolerance || ''}

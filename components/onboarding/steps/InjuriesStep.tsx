@@ -1,20 +1,22 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useOnboarding } from '@/lib/onboarding/context'
 import CheckboxGroup from '@/components/ui/CheckboxGroup'
 import Input from '@/components/ui/Input'
 import { InjuryType } from '@/lib/onboarding/types'
 
-const injuryOptions = [
-  { value: 'NONE', label: 'No injuries', description: 'Currently injury-free' },
-  { value: 'KNEE', label: 'Knee issues', description: 'Current or recent knee problems' },
-  { value: 'SHIN', label: 'Shin splints', description: 'Shin pain or sensitivity' },
-  { value: 'FOOT', label: 'Foot problems', description: 'Plantar fasciitis or similar' },
-  { value: 'OTHER', label: 'Other', description: 'Specify below' },
-]
-
 export default function InjuriesStep() {
   const { data, updateData } = useOnboarding()
+  const t = useTranslations('onboarding.injuries')
+
+  const injuryOptions = [
+    { value: 'NONE', label: t('none'), description: t('noneDesc') },
+    { value: 'KNEE', label: t('knee'), description: t('kneeDesc') },
+    { value: 'SHIN', label: t('shin'), description: t('shinDesc') },
+    { value: 'FOOT', label: t('foot'), description: t('footDesc') },
+    { value: 'OTHER', label: t('other'), description: t('otherDesc') },
+  ]
 
   const handleInjuryChange = (values: string[]) => {
     // If "NONE" is selected, clear all other selections
@@ -47,15 +49,15 @@ export default function InjuriesStep() {
       {data.injuryTypes?.includes('OTHER') && (
         <Input
           type="text"
-          label="Please describe"
+          label={t('pleaseDescribe')}
           value={data.injuryDetails || ''}
           onChange={(e) => updateData({ injuryDetails: e.target.value })}
-          placeholder="Tell us about your injury or limitation"
+          placeholder={t('describePlaceholder')}
         />
       )}
 
       <p className="text-sm text-text-muted">
-        We'll adjust your training to help prevent aggravating existing issues.
+        {t('hint')}
       </p>
     </div>
   )

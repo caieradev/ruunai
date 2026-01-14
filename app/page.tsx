@@ -2,11 +2,13 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import Button from '@/components/ui/Button'
 
 export default function WelcomePage() {
   const router = useRouter()
+  const t = useTranslations('welcome')
 
   useEffect(() => {
     // Redirect to onboarding on desktop
@@ -37,7 +39,7 @@ export default function WelcomePage() {
             </span>
           </h1>
           <p className="text-xl text-text-secondary max-w-md px-4">
-            Your AI-powered running coach. Personalized training plans tailored to your goals.
+            {t('tagline')}
           </p>
         </div>
       </div>
@@ -46,12 +48,12 @@ export default function WelcomePage() {
       <div className="relative z-10 pb-8 space-y-3 pt-8">
         <Link href="/onboarding" className="block">
           <Button size="lg" className="w-full">
-            Start Your Journey
+            {t('startJourney')}
           </Button>
         </Link>
         <Link href="/login" className="block">
           <Button variant="secondary" size="lg" className="w-full">
-            Log In
+            {t('logIn')}
           </Button>
         </Link>
       </div>

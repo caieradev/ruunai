@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import confetti from 'canvas-confetti'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -17,6 +18,7 @@ export default function PlanSuccessScreen({
   onSaveAndContinue,
 }: PlanSuccessScreenProps) {
   const router = useRouter()
+  const t = useTranslations('success')
 
   const fireConfetti = useCallback(() => {
     const duration = 1000
@@ -85,10 +87,10 @@ export default function PlanSuccessScreen({
             <CheckCircle className="w-12 h-12 text-accent-primary" />
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mb-3">
-            Your Plan is Ready!
+            {t('title')}
           </h2>
           <p className="text-text-secondary">
-            We&apos;ve created a personalized training plan just for you.
+            {t('message')}
           </p>
         </div>
 
@@ -96,22 +98,22 @@ export default function PlanSuccessScreen({
           <>
             <div className="p-4 mb-6 rounded-lg bg-dark-border/50 border border-dark-border">
               <p className="text-sm text-text-secondary">
-                Create an account to save your plan and access it anywhere.
+                {t('createAccountPrompt')}
               </p>
             </div>
 
             <div className="space-y-3">
               <Button variant="primary" className="w-full" size="lg" onClick={handleCreateAccount}>
-                Create Account
+                {t('createAccount')}
               </Button>
               <Button variant="secondary" className="w-full" onClick={handleLogin}>
-                I already have an account
+                {t('alreadyHaveAccount')}
               </Button>
             </div>
           </>
         ) : (
           <Button variant="primary" className="w-full" size="lg" onClick={handleGoToDashboard}>
-            View My Dashboard
+            {t('viewDashboard')}
           </Button>
         )}
       </Card>

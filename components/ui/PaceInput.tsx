@@ -2,6 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 
 interface PaceInputProps {
   label?: string
@@ -16,10 +17,11 @@ export default function PaceInput({
   label,
   value,
   onChange,
-  placeholder = 'e.g., 5:30/km',
+  placeholder,
   error,
   className
 }: PaceInputProps) {
+  const t = useTranslations('inputs.pace')
   const [displayValue, setDisplayValue] = useState(value)
 
   useEffect(() => {
@@ -79,7 +81,7 @@ export default function PaceInput({
         type="text"
         value={displayValue}
         onChange={handleChange}
-        placeholder={placeholder}
+        placeholder={placeholder || t('placeholder')}
         className={cn(
           'w-full max-w-full min-w-0 rounded-lg border bg-dark-surface px-4 py-3 text-text-primary placeholder:text-text-muted transition-colors',
           'focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-dark-bg',
@@ -90,11 +92,11 @@ export default function PaceInput({
       />
       {(error || !isValid) && (
         <p className="mt-2 text-sm text-red-500">
-          {error || 'Please enter a valid pace format (MM:SS/km)'}
+          {error || t('invalidFormat')}
         </p>
       )}
       <p className="mt-1 text-xs text-text-muted">
-        Format: MM:SS/km (e.g., 5:30/km) - pace per kilometer
+        {t('formatHint')}
       </p>
     </div>
   )

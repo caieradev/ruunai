@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { useOnboarding } from '@/lib/onboarding/context'
 import { getStepNumber, getTotalSteps, getNextStep, getPreviousStep } from '@/lib/onboarding/steps'
 import { StepId } from '@/lib/onboarding/types'
@@ -40,36 +41,20 @@ const stepComponents: Record<StepId, React.ComponentType> = {
   review: ReviewStep,
 }
 
-const stepTitles: Record<StepId, string> = {
-  goal: "What's your running goal?",
-  'event-details': 'Tell us about your event',
-  experience: "What's your experience level?",
-  'beginner-comfort': 'Can you run continuously?',
-  'advanced-fitness': 'Share your recent performance',
-  'weekly-volume': 'Current weekly running volume',
-  'days-per-week': 'How many days can you train?',
-  'preferred-days': 'Preferred training days',
-  'longest-run': 'Longest recent run',
-  injuries: 'Any injuries or limitations?',
-  equipment: 'What equipment do you have?',
-  'plan-preferences': 'Training plan preferences',
-  review: 'Review your profile',
-}
-
-const stepDescriptions: Record<StepId, string> = {
-  goal: 'Help us understand what you\'re training for',
-  'event-details': 'Optional: Add your event date and target time',
-  experience: 'This helps us tailor your training intensity',
-  'beginner-comfort': 'Let\'s assess your current baseline',
-  'advanced-fitness': 'Help us set the right training zones',
-  'weekly-volume': 'How many kilometers do you run per week?',
-  'days-per-week': 'Select your weekly training availability',
-  'preferred-days': 'Optional: Choose which days work best for you',
-  'longest-run': 'What\'s the farthest you\'ve run recently?',
-  injuries: 'Help us keep your training safe',
-  equipment: 'Optional: Tell us about your training environment',
-  'plan-preferences': 'Customize how your plan is structured',
-  review: 'Confirm your information before we generate your plan',
+const stepKeys: Record<StepId, string> = {
+  goal: 'goal',
+  'event-details': 'eventDetails',
+  experience: 'experience',
+  'beginner-comfort': 'beginnerComfort',
+  'advanced-fitness': 'advancedFitness',
+  'weekly-volume': 'weeklyVolume',
+  'days-per-week': 'daysPerWeek',
+  'preferred-days': 'preferredDays',
+  'longest-run': 'longestRun',
+  injuries: 'injuries',
+  equipment: 'equipment',
+  'plan-preferences': 'planPreferences',
+  review: 'review',
 }
 
 type FlowState = 'quiz' | 'loading' | 'success'
@@ -83,6 +68,7 @@ export default function OnboardingFlow() {
   const { data, currentStep, setCurrentStep, resetOnboarding } = useOnboarding()
   const [flowState, setFlowState] = useState<FlowState>('quiz')
   const [userStatus, setUserStatus] = useState<UserStatus | null>(null)
+  const t = useTranslations('onboarding')
 
   // Check auth status on mount
   useEffect(() => {
@@ -184,6 +170,8 @@ export default function OnboardingFlow() {
     )
   }
 
+  const stepKey = stepKeys[currentStep]
+
   return (
     <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto w-full">
@@ -193,10 +181,10 @@ export default function OnboardingFlow() {
           <Card className="w-full min-w-0">
             <div className="mb-8">
               <h1 className="text-2xl sm:text-3xl font-bold text-text-primary mb-2">
-                {stepTitles[currentStep]}
+                {t(`steps.${stepKey}.title`)}
               </h1>
               <p className="text-text-secondary">
-                {stepDescriptions[currentStep]}
+                {t(`steps.${stepKey}.description`)}
               </p>
             </div>
 
@@ -211,7 +199,7 @@ export default function OnboardingFlow() {
                   onClick={handleBack}
                   className="flex-1"
                 >
-                  Back
+                  {t('navigation.back')}
                 </Button>
               )}
 
@@ -221,7 +209,7 @@ export default function OnboardingFlow() {
                   onClick={handleComplete}
                   className="flex-1"
                 >
-                  Generate my plan
+                  {t('navigation.generatePlan')}
                 </Button>
               ) : (
                 <Button
@@ -230,7 +218,7 @@ export default function OnboardingFlow() {
                   disabled={!canGoNext()}
                   className="flex-1"
                 >
-                  Next
+                  {t('navigation.next')}
                 </Button>
               )}
             </div>

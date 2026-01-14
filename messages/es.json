@@ -1,0 +1,337 @@
+{
+  "header": {
+    "loginPrompt": "¿Ya tienes una cuenta? Iniciar sesión"
+  },
+  "auth": {
+    "createYourAccount": "Crea tu cuenta",
+    "welcomeBack": "Bienvenido de nuevo",
+    "saveYourPlan": "Guarda tu plan y sigue tu progreso",
+    "loginToAccess": "Inicia sesión para acceder a tu plan de entrenamiento",
+    "fullName": "Nombre Completo",
+    "fullNamePlaceholder": "Tu nombre",
+    "email": "Email",
+    "emailPlaceholder": "tu@ejemplo.com",
+    "password": "Contraseña",
+    "passwordPlaceholderCreate": "Crea una contraseña (mín 6 caracteres)",
+    "passwordPlaceholderEnter": "Ingresa tu contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "confirmPasswordPlaceholder": "Confirma tu contraseña",
+    "nameRequired": "El nombre es obligatorio",
+    "passwordsDontMatch": "Las contraseñas no coinciden",
+    "createAccount": "Crear Cuenta",
+    "logIn": "Iniciar Sesión",
+    "loading": "Cargando...",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "dontHaveAccount": "¿No tienes una cuenta?",
+    "signUp": "Registrarse",
+    "checkEmail": "Revisa tu email",
+    "sentConfirmation": "Enviamos un enlace de confirmación a",
+    "clickLink": "Haz clic en el enlace en tu email para activar tu cuenta. Revisa también la carpeta de spam.",
+    "resendIn": "Reenviar en {seconds}s",
+    "resendEmail": "Reenviar email",
+    "useDifferentEmail": "Usar otro email"
+  },
+  "welcome": {
+    "tagline": "Tu entrenador de running con IA. Planes de entrenamiento personalizados para tus objetivos.",
+    "startJourney": "Comienza Tu Viaje",
+    "logIn": "Iniciar Sesión"
+  },
+  "onboarding": {
+    "steps": {
+      "goal": {
+        "title": "¿Cuál es tu objetivo de running?",
+        "description": "Ayúdanos a entender para qué estás entrenando"
+      },
+      "eventDetails": {
+        "title": "Cuéntanos sobre tu evento",
+        "description": "Opcional: Agrega la fecha del evento y tiempo objetivo"
+      },
+      "experience": {
+        "title": "¿Cuál es tu nivel de experiencia?",
+        "description": "Esto nos ayuda a ajustar la intensidad del entrenamiento"
+      },
+      "beginnerComfort": {
+        "title": "¿Puedes correr continuamente?",
+        "description": "Evaluemos tu línea base actual"
+      },
+      "advancedFitness": {
+        "title": "Comparte tu rendimiento reciente",
+        "description": "Ayúdanos a definir las zonas de entrenamiento correctas"
+      },
+      "weeklyVolume": {
+        "title": "Volumen semanal actual de running",
+        "description": "¿Cuántos kilómetros corres por semana?"
+      },
+      "daysPerWeek": {
+        "title": "¿Cuántos días puedes entrenar?",
+        "description": "Selecciona tu disponibilidad semanal de entrenamiento"
+      },
+      "preferredDays": {
+        "title": "Días preferidos para entrenar",
+        "description": "Opcional: Elige qué días te funcionan mejor"
+      },
+      "longestRun": {
+        "title": "Carrera más larga reciente",
+        "description": "¿Cuál fue la mayor distancia que corriste recientemente?"
+      },
+      "injuries": {
+        "title": "¿Alguna lesión o limitación?",
+        "description": "Ayúdanos a mantener tu entrenamiento seguro"
+      },
+      "equipment": {
+        "title": "¿Qué equipamiento tienes?",
+        "description": "Opcional: Cuéntanos sobre tu ambiente de entrenamiento"
+      },
+      "planPreferences": {
+        "title": "Preferencias del plan de entrenamiento",
+        "description": "Personaliza cómo se estructura tu plan"
+      },
+      "review": {
+        "title": "Revisa tu perfil",
+        "description": "Confirma tu información antes de generar tu plan"
+      }
+    },
+    "navigation": {
+      "back": "Atrás",
+      "next": "Siguiente",
+      "generatePlan": "Generar mi plan"
+    },
+    "goals": {
+      "5k": "Carrera 5K",
+      "5kDesc": "Entrena para una carrera de 5 kilómetros",
+      "10k": "Carrera 10K",
+      "10kDesc": "Entrena para una carrera de 10 kilómetros",
+      "halfMarathon": "Media Maratón",
+      "halfMarathonDesc": "Entrena para una carrera de 21,1km",
+      "marathon": "Maratón",
+      "marathonDesc": "Entrena para un maratón completo de 42,2km",
+      "generalFitness": "Condición Física General",
+      "generalFitnessDesc": "Crea un hábito de running y mejora tu condición física"
+    },
+    "experience": {
+      "beginner": "Principiante",
+      "beginnerDesc": "Nuevo en el running o volviendo después de una larga pausa",
+      "intermediate": "Intermedio",
+      "intermediateDesc": "Corriendo regularmente hace varios meses",
+      "advanced": "Avanzado",
+      "advancedDesc": "Corredor experimentado con entrenamiento consistente"
+    },
+    "comfort": {
+      "yes": "Sí, puedo",
+      "yesDesc": "Puedo correr 20 minutos sin parar",
+      "no": "Todavía no",
+      "noDesc": "Necesito llegar a eso"
+    },
+    "volume": {
+      "0_5": "0-5 km",
+      "0_5Desc": "Recién comenzando",
+      "5_15": "5-15 km",
+      "5_15Desc": "Construyendo consistencia",
+      "15_30": "15-30 km",
+      "15_30Desc": "Base sólida",
+      "30_50": "30-50 km",
+      "30_50Desc": "Volumen semanal fuerte",
+      "50_plus": "50+ km",
+      "50_plusDesc": "Entrenamiento de alto kilometraje"
+    },
+    "daysPerWeek": {
+      "2": "2 días",
+      "2Desc": "Compromiso mínimo",
+      "3": "3 días",
+      "3Desc": "Bueno para principiantes",
+      "4": "4 días",
+      "4Desc": "Enfoque equilibrado",
+      "5": "5 días",
+      "5Desc": "Entrenamiento serio",
+      "6": "6 días",
+      "6Desc": "Entrenamiento avanzado",
+      "7": "7 días",
+      "7Desc": "Corredor diario"
+    },
+    "weekDays": {
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miércoles",
+      "thursday": "Jueves",
+      "friday": "Viernes",
+      "saturday": "Sábado",
+      "sunday": "Domingo"
+    },
+    "preferredDaysHint": "Selecciona tus días preferidos de entrenamiento. Esto es opcional y flexible.",
+    "injuries": {
+      "none": "Sin lesiones",
+      "noneDesc": "Actualmente sin lesiones",
+      "knee": "Problemas de rodilla",
+      "kneeDesc": "Problemas actuales o recientes de rodilla",
+      "shin": "Periostitis tibial",
+      "shinDesc": "Dolor o sensibilidad en la espinilla",
+      "foot": "Problemas del pie",
+      "footDesc": "Fascitis plantar o similar",
+      "other": "Otro",
+      "otherDesc": "Especifica abajo",
+      "pleaseDescribe": "Por favor, describe",
+      "describePlaceholder": "Cuéntanos sobre tu lesión o limitación",
+      "hint": "Ajustaremos tu entrenamiento para ayudar a prevenir agravar problemas existentes."
+    },
+    "equipment": {
+      "treadmill": "Cinta de correr",
+      "treadmillDesc": "Acceso a correr indoor",
+      "track": "Pista",
+      "trackDesc": "Acceso a una pista de atletismo",
+      "gym": "Gimnasio",
+      "gymDesc": "Membresía de gimnasio para cross-training",
+      "hills": "Colinas/Senderos",
+      "hillsDesc": "Acceso a terreno variado",
+      "hint": "Esto es opcional. Podemos crear un gran plan solo con correr al aire libre."
+    },
+    "eventDetails": {
+      "eventDate": "Fecha del Evento (Opcional)",
+      "eventDatePlaceholder": "Selecciona la fecha de tu carrera",
+      "targetTime": "Tiempo Objetivo (Opcional)",
+      "targetTimePlaceholder": "ej., 50:00 o 1:30:25",
+      "targetPace": "Ritmo Objetivo (Opcional)",
+      "targetPacePlaceholder": "ej., 5:30/km",
+      "hint": "Estos detalles nos ayudan a crear un plan que alcance su pico en el momento correcto."
+    },
+    "advancedFitness": {
+      "recent5k": "Mejor Tiempo Reciente 5K (Opcional)",
+      "recent5kPlaceholder": "ej., 22:30",
+      "recent10k": "Mejor Tiempo Reciente 10K (Opcional)",
+      "recent10kPlaceholder": "ej., 48:00",
+      "recentEasyPace": "Ritmo Suave Reciente (Opcional)",
+      "recentEasyPacePlaceholder": "ej., 5:30/km",
+      "hint": "Esto nos ayuda a calibrar tus zonas de entrenamiento para un rendimiento óptimo."
+    },
+    "longestRun": {
+      "distance": "Distancia (kilómetros)",
+      "distancePlaceholder": "ej., 10",
+      "noRecentRun": "No tengo una carrera larga reciente",
+      "hint": "Esto nos ayuda a determinar un punto de partida apropiado para tus carreras largas."
+    },
+    "planPreferences": {
+      "planStyle": "Estilo del Plan",
+      "timeBased": "Basado en tiempo",
+      "timeBasedDesc": "Entrenamientos especificados por duración (ej., correr 30 minutos)",
+      "distanceBased": "Basado en distancia",
+      "distanceBasedDesc": "Entrenamientos especificados por distancia (ej., correr 5 km)",
+      "flexibility": "Flexibilidad",
+      "structured": "Estructurado",
+      "structuredDesc": "Entrenamientos específicos en días específicos",
+      "flexible": "Flexible",
+      "flexibleDesc": "Tú eliges qué entrenamiento hacer cada día",
+      "intensityTolerance": "Tolerancia a la Intensidad",
+      "low": "Baja",
+      "lowDesc": "Progresión gradual, más recuperación",
+      "medium": "Media",
+      "mediumDesc": "Enfoque equilibrado",
+      "high": "Alta",
+      "highDesc": "Progresión agresiva, superar límites"
+    },
+    "review": {
+      "yourProfile": "Tu Perfil",
+      "goal": "Objetivo",
+      "eventDate": "Fecha del Evento",
+      "targetTime": "Tiempo Objetivo",
+      "targetPace": "Ritmo Objetivo",
+      "experienceLevel": "Nivel de Experiencia",
+      "canRun20Mins": "Puede correr 20 min continuamente",
+      "recent5kTime": "Tiempo Reciente 5K",
+      "recent10kTime": "Tiempo Reciente 10K",
+      "easyPace": "Ritmo Suave",
+      "weeklyVolume": "Volumen Semanal",
+      "trainingDaysWeek": "Días de Entrenamiento/Semana",
+      "preferredDays": "Días Preferidos",
+      "longestRecentRun": "Carrera Más Larga Reciente",
+      "injuries": "Lesiones",
+      "injuryDetails": "Detalles de la Lesión",
+      "equipment": "Equipamiento",
+      "planStyle": "Estilo del Plan",
+      "flexibility": "Flexibilidad",
+      "intensity": "Intensidad",
+      "notSpecified": "No especificado",
+      "noRecentRun": "Sin carrera reciente",
+      "hint": "Revisa tu información arriba. Puedes volver para hacer cambios o continuar para generar tu plan de entrenamiento personalizado."
+    }
+  },
+  "loader": {
+    "title": "Creando Tu Plan",
+    "stepOf": "Paso {current} de {total}",
+    "stages": {
+      "analyzing": "Analizando tu perfil...",
+      "calculating": "Calculando zonas de entrenamiento...",
+      "building": "Construyendo estructura semanal...",
+      "optimizing": "Optimizando intensidad de entrenamientos...",
+      "scheduling": "Programando días de recuperación...",
+      "balancing": "Equilibrando distribución de carga...",
+      "adding": "Añadiendo hitos de progresión...",
+      "finalizing": "Finalizando tu plan..."
+    }
+  },
+  "success": {
+    "title": "¡Tu Plan Está Listo!",
+    "message": "Hemos creado un plan de entrenamiento personalizado solo para ti.",
+    "createAccountPrompt": "Crea una cuenta para guardar tu plan y acceder desde cualquier lugar.",
+    "createAccount": "Crear Cuenta",
+    "alreadyHaveAccount": "Ya tengo una cuenta",
+    "viewDashboard": "Ver Mi Panel"
+  },
+  "dashboard": {
+    "welcomeBack": "Bienvenido de nuevo,",
+    "tagline": "Tu panel de entrenamiento personalizado",
+    "weeklyDistance": "Distancia Semanal",
+    "trainingDays": "Días de Entrenamiento",
+    "progress": "Progreso",
+    "yourTrainingPlan": "Tu Plan de Entrenamiento",
+    "planPlaceholder": "Tu plan de entrenamiento generado por IA aparecerá aquí",
+    "planBuilding": "Estamos construyendo tu plan personalizado basado en tu perfil",
+    "recentActivity": "Actividad Reciente",
+    "noActivities": "Sin actividades aún",
+    "connectApp": "Conecta tu app de running para ver tus entrenamientos aquí",
+    "quickActions": "Acciones Rápidas",
+    "updateProfile": "Actualizar Perfil",
+    "adjustPlan": "Ajustar Plan",
+    "connectAppBtn": "Conectar App",
+    "resetOnboarding": "Reiniciar Registro",
+    "resetting": "Reiniciando...",
+    "logOut": "Cerrar Sesión",
+    "loggingOut": "Cerrando sesión...",
+    "resetConfirm": "¿Estás seguro de que deseas reiniciar tu registro y comenzar de nuevo?",
+    "comingSoon": "Próximamente",
+    "comingSoonItems": {
+      "aiPlans": "Planes de entrenamiento personalizados generados por IA",
+      "realTime": "Ajustes de plan en tiempo real basados en tu progreso",
+      "integration": "Integración con Strava, Garmin y otras apps de running",
+      "analytics": "Análisis detallados e insights de rendimiento",
+      "export": "Exportación de plan de entrenamiento (PDF, Calendario)"
+    }
+  },
+  "common": {
+    "yes": "Sí",
+    "no": "No",
+    "loading": "Cargando...",
+    "error": "Error",
+    "runner": "Corredor",
+    "stepOf": "Paso {current} de {total}"
+  },
+  "inputs": {
+    "time": {
+      "placeholder": "ej., 50:00 o 1:30:25",
+      "invalidFormat": "Ingresa un formato de tiempo válido (MM:SS o H:MM:SS)",
+      "formatHint": "Formato: MM:SS (ej., 50:00) o H:MM:SS (ej., 1:30:25)"
+    },
+    "pace": {
+      "placeholder": "ej., 5:30/km",
+      "invalidFormat": "Ingresa un formato de ritmo válido (MM:SS/km)",
+      "formatHint": "Formato: MM:SS/km (ej., 5:30/km) - ritmo por kilómetro"
+    }
+  },
+  "errors": {
+    "invalidCredentials": "Credenciales inválidas",
+    "emailNotConfirmed": "Email no confirmado",
+    "userAlreadyRegistered": "Usuario ya registrado",
+    "weakPassword": "La contraseña debe tener al menos 6 caracteres",
+    "invalidEmail": "Dirección de email inválida",
+    "networkError": "Error de conexión. Intenta de nuevo.",
+    "unknownError": "Ocurrió un error. Intenta de nuevo."
+  }
+}

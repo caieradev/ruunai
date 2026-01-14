@@ -1,20 +1,22 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import Card from '@/components/ui/Card'
 
-const STAGES = [
-  { label: 'Analyzing your profile...', duration: 1150 },
-  { label: 'Calculating training zones...', duration: 1150 },
-  { label: 'Building weekly structure...', duration: 1150 },
-  { label: 'Optimizing workout intensity...', duration: 1150 },
-  { label: 'Scheduling recovery days...', duration: 1150 },
-  { label: 'Balancing workload distribution...', duration: 1150 },
-  { label: 'Adding progression milestones...', duration: 1150 },
-  { label: 'Finalizing your plan...', duration: 1450 }, // + 500ms pause handled in logic
-]
+const STAGE_KEYS = [
+  'analyzing',
+  'calculating',
+  'building',
+  'optimizing',
+  'scheduling',
+  'balancing',
+  'adding',
+  'finalizing',
+] as const
 
-const TOTAL_DURATION = STAGES.reduce((sum, s) => sum + s.duration, 0)
+const STAGE_DURATIONS = [1150, 1150, 1150, 1150, 1150, 1150, 1150, 1450]
+const TOTAL_DURATION = STAGE_DURATIONS.reduce((sum, d) => sum + d, 0)
 
 interface PlanGeneratingLoaderProps {
   onComplete: () => void
@@ -23,6 +25,7 @@ interface PlanGeneratingLoaderProps {
 export default function PlanGeneratingLoader({ onComplete }: PlanGeneratingLoaderProps) {
   const [currentStage, setCurrentStage] = useState(0)
   const [progress, setProgress] = useState(0)
+  const t = useTranslations('loader')
 
   useEffect(() => {
     let elapsed = 0
@@ -38,8 +41,8 @@ export default function PlanGeneratingLoader({ onComplete }: PlanGeneratingLoade
 
       // Calculate current stage
       let accumulated = 0
-      for (let i = 0; i < STAGES.length; i++) {
-        accumulated += STAGES[i].duration
+      for (let i = 0; i < STAGE_DURATIONS.length; i++) {
+        accumulated += STAGE_DURATIONS[i]
         if (elapsed < accumulated) {
           setCurrentStage(i)
           break
@@ -47,7 +50,7 @@ export default function PlanGeneratingLoader({ onComplete }: PlanGeneratingLoade
       }
 
       if (elapsed >= TOTAL_DURATION) {
-        setCurrentStage(STAGES.length - 1)
+        setCurrentStage(STAGE_KEYS.length - 1)
         setProgress(100)
         // Pause 500ms on the last step before completing
         completionTimeout = setTimeout(() => {
@@ -82,9 +85,9 @@ export default function PlanGeneratingLoader({ onComplete }: PlanGeneratingLoade
             <div className="absolute inset-0 rounded-full border-2 border-accent-primary/30 animate-ping" />
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mb-3">
-            Creating Your Plan
+            {t('title')}
           </h2>
-          <p className="text-text-secondary h-6">{STAGES[currentStage]?.label}</p>
+          <p className="text-text-secondary h-6">{t(`stages.${STAGE_KEYS[currentStage]}`)}</p>
         </div>
 
         {/* Progress bar */}
@@ -99,7 +102,7 @@ export default function PlanGeneratingLoader({ onComplete }: PlanGeneratingLoade
         </div>
 
         <p className="text-sm text-text-muted">
-          Step {currentStage + 1} of {STAGES.length}
+          {t('stepOf', { current: currentStage + 1, total: STAGE_KEYS.length })}
         </p>
       </Card>
     </div>

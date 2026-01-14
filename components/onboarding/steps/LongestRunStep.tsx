@@ -1,10 +1,12 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useOnboarding } from '@/lib/onboarding/context'
 import Input from '@/components/ui/Input'
 
 export default function LongestRunStep() {
   const { data, updateData } = useOnboarding()
+  const t = useTranslations('onboarding.longestRun')
 
   const handleCheckboxChange = (checked: boolean) => {
     if (checked) {
@@ -18,10 +20,10 @@ export default function LongestRunStep() {
     <div className="space-y-6">
       <Input
         type="number"
-        label="Distance (kilometers)"
+        label={t('distance')}
         value={data.longestRecentRun?.toString() || ''}
         onChange={(e) => updateData({ longestRecentRun: parseFloat(e.target.value) || 0 })}
-        placeholder="e.g., 10"
+        placeholder={t('distancePlaceholder')}
         min="0"
         step="0.1"
         disabled={data.noRecentRun}
@@ -34,11 +36,11 @@ export default function LongestRunStep() {
           className="w-5 h-5 rounded accent-accent-primary focus-ring cursor-pointer"
         />
         <span className="text-sm text-text-secondary">
-          I don't have a recent long run
+          {t('noRecentRun')}
         </span>
       </label>
       <p className="text-sm text-text-muted">
-        This helps us determine an appropriate starting point for your long runs.
+        {t('hint')}
       </p>
     </div>
   )

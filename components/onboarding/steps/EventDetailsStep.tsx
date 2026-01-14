@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useOnboarding } from '@/lib/onboarding/context'
 import Input from '@/components/ui/Input'
 import TimeInput from '@/components/ui/TimeInput'
@@ -7,30 +8,31 @@ import PaceInput from '@/components/ui/PaceInput'
 
 export default function EventDetailsStep() {
   const { data, updateData } = useOnboarding()
+  const t = useTranslations('onboarding.eventDetails')
 
   return (
     <div className="space-y-6 w-full min-w-0">
       <Input
         type="date"
-        label="Event Date (Optional)"
+        label={t('eventDate')}
         value={data.eventDate || ''}
         onChange={(e) => updateData({ eventDate: e.target.value })}
-        placeholder="Select your race date"
+        placeholder={t('eventDatePlaceholder')}
       />
       <TimeInput
-        label="Target Time (Optional)"
+        label={t('targetTime')}
         value={data.targetTime || ''}
         onChange={(value) => updateData({ targetTime: value })}
-        placeholder="e.g., 50:00 or 1:30:25"
+        placeholder={t('targetTimePlaceholder')}
       />
       <PaceInput
-        label="Target Pace (Optional)"
+        label={t('targetPace')}
         value={data.targetPace || ''}
         onChange={(value) => updateData({ targetPace: value })}
-        placeholder="e.g., 5:30/km"
+        placeholder={t('targetPacePlaceholder')}
       />
       <p className="text-sm text-text-muted">
-        These details help us create a plan that peaks at the right time.
+        {t('hint')}
       </p>
     </div>
   )

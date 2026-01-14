@@ -1,23 +1,17 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useOnboarding } from '@/lib/onboarding/context'
 import RadioGroup from '@/components/ui/RadioGroup'
 
-const comfortOptions = [
-  {
-    value: 'yes',
-    label: 'Yes, I can',
-    description: 'I can run for 20 minutes without stopping',
-  },
-  {
-    value: 'no',
-    label: 'Not yet',
-    description: 'I need to build up to that',
-  },
-]
-
 export default function BeginnerComfortStep() {
   const { data, updateData } = useOnboarding()
+  const t = useTranslations('onboarding.comfort')
+
+  const comfortOptions = [
+    { value: 'yes', label: t('yes'), description: t('yesDesc') },
+    { value: 'no', label: t('no'), description: t('noDesc') },
+  ]
 
   return (
     <div className="space-y-6">
