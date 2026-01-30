@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { getSupabaseBrowserClient } from '@/lib/supabase/client'
+import { getInitialLocale } from '@/lib/i18n/client'
 import Header from '@/components/Header'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -11,7 +12,7 @@ import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 const STORAGE_KEY = 'ruunai_onboarding_data'
 const STEP_KEY = 'ruunai_onboarding_step'
 
-type Status = 'loading' | 'submitting' | 'success' | 'error'
+type Status = 'loading' | 'submitting' | 'generating' | 'success' | 'error'
 
 export default function ConfirmPage() {
   const [status, setStatus] = useState<Status>('loading')
@@ -52,20 +53,31 @@ export default function ConfirmPage() {
             // Clear localStorage
             localStorage.removeItem(STORAGE_KEY)
             localStorage.removeItem(STEP_KEY)
+
+            // Trigger AI plan generation
+            setStatus('generating')
+            try {
+              const language = getInitialLocale()
+              await fetch('/api/plan/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'new', language }),
+              })
+            } catch {
+              // Plan generation failed — user can retry from the dashboard
+            }
+
             setStatus('success')
-            // Redirect after a brief moment to show success
             setTimeout(() => router.push('/app'), 1500)
             return
           } else {
             // Submission failed, but user is verified - redirect anyway
-            console.error('Failed to submit onboarding data')
             localStorage.removeItem(STORAGE_KEY)
             localStorage.removeItem(STEP_KEY)
             router.push('/app')
             return
           }
-        } catch (e) {
-          console.error('Failed to submit draft:', e)
+        } catch {
           // Clear draft and redirect anyway
           localStorage.removeItem(STORAGE_KEY)
           localStorage.removeItem(STEP_KEY)
@@ -79,7 +91,21 @@ export default function ConfirmPage() {
         const meResponse = await fetch('/api/me')
         const me = await meResponse.json()
 
-        if (me.has_responses) {
+        if (me.has_responses && !me.has_active_plan) {
+          // Has onboarding data but no plan — trigger generation
+          setStatus('generating')
+          try {
+            const language = getInitialLocale()
+            await fetch('/api/plan/generate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ type: 'new', language }),
+            })
+          } catch {
+            // Plan generation failed — user can retry from the dashboard
+          }
+          router.push('/app')
+        } else if (me.has_responses) {
           router.push('/app')
         } else {
           router.push('/onboarding')
@@ -112,7 +138,17 @@ export default function ConfirmPage() {
               <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-accent-primary/20 flex items-center justify-center">
                 <Loader2 className="w-8 h-8 text-accent-primary animate-spin" />
               </div>
-              <h2 className="text-2xl font-bold text-text-primary mb-2">Saving your plan</h2>
+              <h2 className="text-2xl font-bold text-text-primary mb-2">Saving your data</h2>
+              <p className="text-text-secondary">Almost there...</p>
+            </>
+          )}
+
+          {status === 'generating' && (
+            <>
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-accent-primary/20 flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-accent-primary animate-spin" />
+              </div>
+              <h2 className="text-2xl font-bold text-text-primary mb-2">Preparing everything for you</h2>
               <p className="text-text-secondary">Almost there...</p>
             </>
           )}

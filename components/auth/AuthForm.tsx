@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useLocale } from 'next-intl'
 import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 import Card from '@/components/ui/Card'
 import Input from '@/components/ui/Input'
@@ -30,6 +31,7 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
 
   const router = useRouter()
   const t = useTranslations('auth')
+  const locale = useLocale()
 
   // Handle resend cooldown timer
   useEffect(() => {
@@ -104,9 +106,20 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
           if (response.ok) {
             localStorage.removeItem(STORAGE_KEY)
             localStorage.removeItem(STEP_KEY)
+
+            // Trigger AI plan generation after saving onboarding data
+            try {
+              await fetch('/api/plan/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'new', language: locale }),
+              })
+            } catch {
+              // Plan generation failed — user can retry from the dashboard
+            }
           }
-        } catch (e) {
-          console.error('Failed to submit draft on login:', e)
+        } catch {
+          // Failed to submit draft on login
         }
       }
 
