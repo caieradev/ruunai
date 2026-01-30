@@ -96,6 +96,9 @@
       "next": "Próximo",
       "generatePlan": "Gerar meu plano"
     },
+    "generation": {
+      "errorMessage": "Não conseguimos gerar seu plano de treino. Por favor, tente novamente."
+    },
     "goals": {
       "5k": "Corrida 5K",
       "5kDesc": "Treine para uma corrida de 5 quilômetros",
@@ -311,7 +314,8 @@
     "loading": "Carregando...",
     "error": "Erro",
     "runner": "Corredor",
-    "stepOf": "Passo {current} de {total}"
+    "stepOf": "Passo {current} de {total}",
+    "tryAgain": "Tentar Novamente"
   },
   "inputs": {
     "time": {
@@ -333,5 +337,103 @@
     "invalidEmail": "Endereço de email inválido",
     "networkError": "Erro de conexão. Tente novamente.",
     "unknownError": "Ocorreu um erro. Tente novamente."
+  },
+  "plan": {
+    "today": {
+      "label": "Treino de Hoje"
+    },
+    "week": {
+      "label": "Semana {number}"
+    },
+    "month": {
+      "label": "Calendário Mensal"
+    },
+    "tabs": {
+      "today": "Hoje",
+      "week": "Semana",
+      "month": "Mês",
+      "history": "Histórico"
+    },
+    "restDay": {
+      "title": "Dia de Descanso",
+      "message": "Relaxe hoje. Seu corpo se recupera e fica mais forte durante o descanso."
+    },
+    "warmup": "Aquecimento",
+    "cooldown": "Desaquecimento",
+    "notes": "Observações",
+    "workoutTypes": {
+      "easy_run": "Corrida Leve",
+      "tempo": "Corrida de Ritmo",
+      "intervals": "Intervalos",
+      "long_run": "Corrida Longa",
+      "recovery": "Recuperação",
+      "cross_training": "Treino Cruzado",
+      "race_pace": "Ritmo de Prova"
+    },
+    "expired": {
+      "title": "Seu Plano Acabou",
+      "message": "Seu plano de treino de 30 dias foi concluído. Gere um novo para continuar evoluindo!"
+    },
+    "noPlan": {
+      "title": "Nenhum Plano Ativo",
+      "message": "Gere seu primeiro plano de treino com IA para começar!",
+      "generate": "Gerar Meu Plano"
+    },
+    "actions": {
+      "generateNew": "Gerar Novo Plano",
+      "regenerate": "Regenerar Plano",
+      "remaining": "{count} de 10 restantes"
+    },
+    "generateModal": {
+      "title": "Gerar Novo Plano",
+      "message": "Seu plano atual será movido para o histórico.",
+      "confirm": "Gerar",
+      "cancel": "Cancelar"
+    },
+    "regenerateModal": {
+      "title": "Regenerar Plano",
+      "message": "Seu plano atual será substituído e NÃO será salvo no histórico.",
+      "remaining": "{count} de 10 regenerações restantes",
+      "confirm": "Regenerar",
+      "cancel": "Cancelar"
+    },
+    "feedback": {
+      "title": "Como foi seu plano anterior?",
+      "difficulty": {
+        "label": "Dificuldade Geral",
+        "TOO_EASY": "Muito Fácil",
+        "ADEQUATE": "Adequado",
+        "TOO_HARD": "Muito Difícil"
+      },
+      "volume": {
+        "label": "Volume de Treino",
+        "WANTED_MORE": "Queria Mais",
+        "GOOD": "Bom Volume",
+        "TOO_MUCH": "Muito Volume"
+      },
+      "variety": {
+        "label": "Variedade de Treinos",
+        "WANTED_MORE": "Queria Mais",
+        "GOOD": "Boa Variedade",
+        "TOO_MUCH": "Muita Variedade"
+      },
+      "injuries": {
+        "label": "Lesões",
+        "NO_ISSUES": "Sem Problemas",
+        "HAD_DISCOMFORT": "Tive Desconforto",
+        "GOT_INJURED": "Me Lesionei"
+      },
+      "comments": {
+        "label": "Comentários Adicionais",
+        "placeholder": "Algo mais que queira nos contar sobre o plano anterior?"
+      },
+      "submit": "Enviar Feedback"
+    },
+    "history": {
+      "title": "Histórico de Planos",
+      "empty": "Nenhum plano anterior ainda.",
+      "viewPlan": "Ver Plano",
+      "defaultTitle": "Plano de Treino"
+    }
   }
 }
