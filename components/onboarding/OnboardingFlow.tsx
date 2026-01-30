@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslations } from 'next-intl'
+import { useLocale } from 'next-intl'
 import { useOnboarding } from '@/lib/onboarding/context'
 import { getStepNumber, getTotalSteps, getNextStep, getPreviousStep } from '@/lib/onboarding/steps'
 import { StepId } from '@/lib/onboarding/types'
@@ -10,6 +11,7 @@ import ProgressBar from '@/components/ui/ProgressBar'
 import Card from '@/components/ui/Card'
 import PlanGeneratingLoader from './PlanGeneratingLoader'
 import PlanSuccessScreen from './PlanSuccessScreen'
+import { AlertCircle } from 'lucide-react'
 
 import GoalStep from './steps/GoalStep'
 import EventDetailsStep from './steps/EventDetailsStep'
@@ -57,7 +59,7 @@ const stepKeys: Record<StepId, string> = {
   review: 'review',
 }
 
-type FlowState = 'quiz' | 'loading' | 'success'
+type FlowState = 'quiz' | 'loading' | 'success' | 'error'
 
 interface UserStatus {
   id?: string
@@ -68,9 +70,15 @@ export default function OnboardingFlow() {
   const { data, currentStep, setCurrentStep, resetOnboarding } = useOnboarding()
   const [flowState, setFlowState] = useState<FlowState>('quiz')
   const [userStatus, setUserStatus] = useState<UserStatus | null>(null)
+  const [generationError, setGenerationError] = useState<string | null>(null)
+  const locale = useLocale()
   const t = useTranslations('onboarding')
+  const tCommon = useTranslations('common')
 
-  // Check auth status on mount
+  const apiDoneRef = useRef(false)
+  const apiSuccessRef = useRef(false)
+  const loaderDoneRef = useRef(false)
+
   useEffect(() => {
     async function checkAuth() {
       try {
@@ -132,33 +140,125 @@ export default function OnboardingFlow() {
     }
   }
 
-  const handleComplete = () => {
-    setFlowState('loading')
-  }
-
-  const handleLoaderComplete = useCallback(() => {
-    setFlowState('success')
-  }, [])
-
-  const handleSaveAndContinue = useCallback(async () => {
+  const generatePlan = useCallback(async () => {
     try {
-      const response = await fetch('/api/onboarding/submit', {
+      const response = await fetch('/api/plan/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ payload: data }),
+        body: JSON.stringify({ type: 'new', language: locale }),
       })
 
-      if (response.ok) {
-        resetOnboarding()
+      if (!response.ok) {
+        let message = 'Failed to generate plan'
+        try {
+          const errorData = await response.json()
+          if (errorData.error) message = errorData.error
+        } catch {
+          // Response body was not valid JSON
+        }
+        throw new Error(message)
       }
-    } catch (error) {
-      console.error('Failed to save onboarding data:', error)
-    }
-  }, [data, resetOnboarding])
 
-  // Render based on flow state
+      apiSuccessRef.current = true
+    } catch (error) {
+      apiSuccessRef.current = false
+      setGenerationError(error instanceof Error ? error.message : 'Failed to generate plan')
+    } finally {
+      apiDoneRef.current = true
+      if (loaderDoneRef.current) {
+        setFlowState(apiSuccessRef.current ? 'success' : 'error')
+      }
+    }
+  }, [locale])
+
+  const handleComplete = useCallback(async () => {
+    apiDoneRef.current = false
+    apiSuccessRef.current = false
+    loaderDoneRef.current = false
+    setGenerationError(null)
+    setFlowState('loading')
+
+    if (isLoggedIn) {
+      // Save onboarding data first — plan generation needs runner_responses in the DB
+      try {
+        const submitResponse = await fetch('/api/onboarding/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ payload: data }),
+        })
+
+        if (!submitResponse.ok) {
+          throw new Error('Failed to save onboarding data')
+        }
+      } catch (error) {
+        apiDoneRef.current = true
+        apiSuccessRef.current = false
+        setGenerationError(error instanceof Error ? error.message : 'Failed to save onboarding data')
+        if (loaderDoneRef.current) {
+          setFlowState('error')
+        }
+        return
+      }
+
+      generatePlan()
+    }
+  }, [isLoggedIn, generatePlan, data])
+
+  const handleLoaderComplete = useCallback(() => {
+    loaderDoneRef.current = true
+
+    if (!isLoggedIn) {
+      setFlowState('success')
+      return
+    }
+
+    if (apiDoneRef.current) {
+      setFlowState(apiSuccessRef.current ? 'success' : 'error')
+    }
+    // If API not done yet, generatePlan() will handle the transition
+  }, [isLoggedIn])
+
+  const handleSaveAndContinue = useCallback(async () => {
+    // Onboarding data was already saved before plan generation in handleComplete
+    resetOnboarding()
+  }, [resetOnboarding])
+
+  const handleRetry = useCallback(() => {
+    setGenerationError(null)
+    apiDoneRef.current = false
+    apiSuccessRef.current = false
+    loaderDoneRef.current = false
+    setFlowState('loading')
+    generatePlan()
+  }, [generatePlan])
+
   if (flowState === 'loading') {
     return <PlanGeneratingLoader onComplete={handleLoaderComplete} />
+  }
+
+  if (flowState === 'error') {
+    return (
+      <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl mx-auto w-full">
+          <Card className="w-full text-center py-12">
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center">
+                <AlertCircle className="w-8 h-8 text-red-400" />
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-text-primary mb-3">
+              {tCommon('error')}
+            </h2>
+            <p className="text-text-secondary mb-8 max-w-md mx-auto">
+              {generationError || t('generation.errorMessage')}
+            </p>
+            <Button variant="primary" onClick={handleRetry}>
+              {tCommon('tryAgain')}
+            </Button>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   if (flowState === 'success') {

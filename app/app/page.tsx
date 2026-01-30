@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getSupabaseServerClient } from '@/lib/supabase/server'
 import DashboardContent from '@/components/dashboard/DashboardContent'
+import type { TrainingPlanRow, TrainingDayRow } from '@/lib/supabase/types'
 
 interface RunnerProfile {
   full_name: string | null
@@ -32,5 +33,32 @@ export default async function AppPage() {
     redirect('/onboarding')
   }
 
-  return <DashboardContent fullName={typedRunner?.full_name ?? null} />
+  // Fetch active plan and its training days
+  const { data: plan } = await supabase
+    .from('training_plans')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('status', 'active')
+    .single()
+
+  const typedPlan = plan as TrainingPlanRow | null
+
+  let days: TrainingDayRow[] = []
+  if (typedPlan) {
+    const { data: trainingDays } = await supabase
+      .from('training_days')
+      .select('*')
+      .eq('plan_id', typedPlan.id)
+      .order('day_number')
+
+    days = (trainingDays as TrainingDayRow[] | null) ?? []
+  }
+
+  return (
+    <DashboardContent
+      fullName={typedRunner?.full_name ?? null}
+      initialPlan={typedPlan}
+      initialDays={days}
+    />
+  )
 }
