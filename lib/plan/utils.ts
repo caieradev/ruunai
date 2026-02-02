@@ -1,4 +1,4 @@
-import type { WorkoutType, TrainingPlanRow, TrainingDayRow } from '@/lib/supabase/types'
+import type { WorkoutType, TrainingPlanRow, TrainingDayRow, WorkoutLogRow } from '@/lib/supabase/types'
 
 export function getWorkoutColor(type: WorkoutType): string {
   const colors: Record<WorkoutType, string> = {
@@ -89,4 +89,128 @@ export function getDayName(date: Date, locale: string): string {
 export function isToday(date: Date): boolean {
   const today = new Date()
   return date.toISOString().split('T')[0] === today.toISOString().split('T')[0]
+}
+
+export function getWeeklyKm(
+  days: TrainingDayRow[],
+  logs: WorkoutLogRow[]
+): { current: number; previous: number } {
+  const today = new Date()
+  const todayStr = today.toISOString().split('T')[0]
+
+  const weekAgo = new Date(today)
+  weekAgo.setDate(today.getDate() - 7)
+  const weekAgoStr = weekAgo.toISOString().split('T')[0]
+
+  const twoWeeksAgo = new Date(today)
+  twoWeeksAgo.setDate(today.getDate() - 14)
+  const twoWeeksAgoStr = twoWeeksAgo.toISOString().split('T')[0]
+
+  const completedDayIds = new Set(
+    logs.filter(l => l.status === 'completed').map(l => l.training_day_id)
+  )
+
+  let current = 0
+  let previous = 0
+  for (const day of days) {
+    if (!completedDayIds.has(day.id)) continue
+    if (day.date > weekAgoStr && day.date <= todayStr) {
+      current += day.distance_km ?? 0
+    } else if (day.date > twoWeeksAgoStr && day.date <= weekAgoStr) {
+      previous += day.distance_km ?? 0
+    }
+  }
+
+  return {
+    current: Math.round(current * 10) / 10,
+    previous: Math.round(previous * 10) / 10,
+  }
+}
+
+export function getStreak(
+  days: TrainingDayRow[],
+  logs: WorkoutLogRow[]
+): number {
+  const today = new Date().toISOString().split('T')[0]
+  const pastDays = days
+    .filter(d => d.date <= today)
+    .sort((a, b) => b.date.localeCompare(a.date))
+
+  const logMap = new Map(logs.map(l => [l.training_day_id, l]))
+
+  let streak = 0
+  for (const day of pastDays) {
+    const log = logMap.get(day.id)
+    if (log?.status === 'completed') {
+      streak++
+    } else if (log?.status === 'skipped') {
+      break
+    } else {
+      if (day.date === today) continue
+      break
+    }
+  }
+  return streak
+}
+
+export function getMonthCompletion(
+  days: TrainingDayRow[],
+  logs: WorkoutLogRow[]
+): number {
+  if (days.length === 0) return 0
+  const completedCount = logs.filter(l => l.status === 'completed').length
+  return Math.round((completedCount / days.length) * 100)
+}
+
+export type WeekLoad = 'light' | 'moderate' | 'heavy'
+
+export function getWeekLoad(days: TrainingDayRow[]): WeekLoad {
+  const today = new Date()
+  const todayStr = today.toISOString().split('T')[0]
+  const weekAgo = new Date(today)
+  weekAgo.setDate(today.getDate() - 7)
+  const weekAgoStr = weekAgo.toISOString().split('T')[0]
+
+  const weekDays = days.filter(d => d.date > weekAgoStr && d.date <= todayStr)
+  if (weekDays.length === 0) return 'light'
+
+  const intense = new Set<WorkoutType>(['intervals', 'tempo', 'race_pace'])
+  const intenseCount = weekDays.filter(d => intense.has(d.workout_type)).length
+  const ratio = intenseCount / weekDays.length
+
+  if (ratio >= 0.5) return 'heavy'
+  if (ratio >= 0.2) return 'moderate'
+  return 'light'
+}
+
+export function getNext7Days(
+  days: TrainingDayRow[],
+  planStartDate: string,
+  planEndDate: string
+): { date: Date; day: TrainingDayRow | null; inPlan: boolean }[] {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const result: { date: Date; day: TrainingDayRow | null; inPlan: boolean }[] = []
+
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(today)
+    date.setDate(today.getDate() + i)
+    const dateStr = date.toISOString().split('T')[0]
+    const day = days.find(d => d.date === dateStr) ?? null
+    const inPlan = dateStr >= planStartDate && dateStr <= planEndDate
+    result.push({ date, day, inPlan })
+  }
+  return result
+}
+
+export function getNextWorkout(
+  days: TrainingDayRow[],
+  logs: WorkoutLogRow[]
+): TrainingDayRow | null {
+  const today = new Date().toISOString().split('T')[0]
+  const loggedIds = new Set(logs.map(l => l.training_day_id))
+
+  return days
+    .filter(d => d.date > today && !loggedIds.has(d.id))
+    .sort((a, b) => a.date.localeCompare(b.date))[0] ?? null
 }
