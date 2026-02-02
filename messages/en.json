@@ -306,7 +306,48 @@
       "integration": "Integration with Strava, Garmin, and other running apps",
       "analytics": "Detailed analytics and performance insights",
       "export": "Training plan export (PDF, Calendar)"
-    }
+    },
+    "stats": {
+      "weeklyKm": "This Week",
+      "weeklyKmUnit": "km",
+      "streak": "Streak",
+      "streakUnit": "{count, plural, one {day} other {days}}",
+      "monthCompletion": "Month",
+      "monthCompletionUnit": "completed",
+      "weekLoad": "Week Load",
+      "weekLoadLight": "Light",
+      "weekLoadModerate": "Moderate",
+      "weekLoadHeavy": "Heavy",
+      "viewAll": "View all stats"
+    },
+    "nextWorkout": {
+      "title": "Next Up",
+      "noUpcoming": "No upcoming workouts"
+    },
+    "upcoming": {
+      "title": "Upcoming Days",
+      "viewPlan": "View full plan"
+    },
+    "achievements": {
+      "title": "Achievements",
+      "viewAll": "View all",
+      "first5k": "First 5K",
+      "first10k": "First 10K",
+      "first21k": "First Half Marathon",
+      "streak3": "3-Day Streak",
+      "streak5": "5-Day Streak",
+      "streak10": "10-Day Streak",
+      "streak30": "30-Day Streak",
+      "month50": "Half Month Done",
+      "month100": "Month Complete",
+      "firstWeek": "First Full Week",
+      "firstMonth": "First Full Month"
+    },
+    "expiredBanner": {
+      "message": "Your plan ended on {date}.",
+      "generate": "Generate New Plan"
+    },
+    "comingSoonPage": "Coming soon"
   },
   "common": {
     "yes": "Yes",
@@ -434,6 +475,40 @@
       "empty": "No previous plans yet.",
       "viewPlan": "View Plan",
       "defaultTitle": "Training Plan"
+    },
+    "completion": {
+      "title": "How did it feel?",
+      "FELT_EASY": "Easy",
+      "FELT_ADEQUATE": "Adequate",
+      "FELT_HARD": "Hard"
+    },
+    "skip": {
+      "title": "Why did you skip?",
+      "TOO_TIRED": "Too tired",
+      "INJURY": "Injury",
+      "NO_TIME": "No time",
+      "TOO_HARD": "Too hard",
+      "WEATHER": "Weather",
+      "SICK": "Sick",
+      "OTHER": "Other",
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    },
+    "suggestion": {
+      "title": "Suggested Adjustments",
+      "message": "Based on your skip, we suggest adjusting your upcoming workouts:",
+      "original": "Original",
+      "suggested": "Suggested",
+      "accept": "Accept Changes",
+      "reject": "Keep Original"
+    },
+    "log": {
+      "completed": "Completed",
+      "skipped": "Skipped"
+    },
+    "trackActions": {
+      "markDone": "Mark as Done",
+      "didntDoIt": "Didn't Do It"
     }
   }
 }

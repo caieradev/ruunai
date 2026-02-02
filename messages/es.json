@@ -306,7 +306,48 @@
       "integration": "Integración con Strava, Garmin y otras apps de running",
       "analytics": "Análisis detallados e insights de rendimiento",
       "export": "Exportación de plan de entrenamiento (PDF, Calendario)"
-    }
+    },
+    "stats": {
+      "weeklyKm": "Esta Semana",
+      "weeklyKmUnit": "km",
+      "streak": "Racha",
+      "streakUnit": "{count, plural, one {día} other {días}}",
+      "monthCompletion": "Mes",
+      "monthCompletionUnit": "completado",
+      "weekLoad": "Carga Semanal",
+      "weekLoadLight": "Ligera",
+      "weekLoadModerate": "Moderada",
+      "weekLoadHeavy": "Pesada",
+      "viewAll": "Ver todas las estadísticas"
+    },
+    "nextWorkout": {
+      "title": "Siguiente Entrenamiento",
+      "noUpcoming": "No hay entrenamientos próximos"
+    },
+    "upcoming": {
+      "title": "Próximos Días",
+      "viewPlan": "Ver plan completo"
+    },
+    "achievements": {
+      "title": "Logros",
+      "viewAll": "Ver todos",
+      "first5k": "Primer 5K",
+      "first10k": "Primer 10K",
+      "first21k": "Primera Media Maratón",
+      "streak3": "Racha de 3 Días",
+      "streak5": "Racha de 5 Días",
+      "streak10": "Racha de 10 Días",
+      "streak30": "Racha de 30 Días",
+      "month50": "Mitad del Mes Completada",
+      "month100": "Mes Completo",
+      "firstWeek": "Primera Semana Completa",
+      "firstMonth": "Primer Mes Completo"
+    },
+    "expiredBanner": {
+      "message": "Tu plan terminó el {date}.",
+      "generate": "Generar Nuevo Plan"
+    },
+    "comingSoonPage": "Próximamente"
   },
   "common": {
     "yes": "Sí",
@@ -434,6 +475,40 @@
       "empty": "No hay planes anteriores aún.",
       "viewPlan": "Ver Plan",
       "defaultTitle": "Plan de Entrenamiento"
+    },
+    "completion": {
+      "title": "¿Cómo te sentiste?",
+      "FELT_EASY": "Fácil",
+      "FELT_ADEQUATE": "Adecuado",
+      "FELT_HARD": "Difícil"
+    },
+    "skip": {
+      "title": "¿Por qué no entrenaste?",
+      "TOO_TIRED": "Muy cansado",
+      "INJURY": "Lesión",
+      "NO_TIME": "Sin tiempo",
+      "TOO_HARD": "Muy difícil",
+      "WEATHER": "Clima",
+      "SICK": "Enfermo",
+      "OTHER": "Otro",
+      "confirm": "Confirmar",
+      "cancel": "Cancelar"
+    },
+    "suggestion": {
+      "title": "Ajustes Sugeridos",
+      "message": "Basado en tu falta, sugerimos ajustar tus próximos entrenamientos:",
+      "original": "Original",
+      "suggested": "Sugerido",
+      "accept": "Aceptar Cambios",
+      "reject": "Mantener Original"
+    },
+    "log": {
+      "completed": "Completado",
+      "skipped": "Omitido"
+    },
+    "trackActions": {
+      "markDone": "Marcar como Hecho",
+      "didntDoIt": "No Lo Hice"
     }
   }
 }
