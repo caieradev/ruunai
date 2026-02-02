@@ -7,13 +7,28 @@ import { useLocale } from 'next-intl'
 import Header from '@/components/Header'
 import Button from '@/components/ui/Button'
 import TodayCard from '@/components/plan/TodayCard'
-import WeeklyView from '@/components/plan/WeeklyView'
-import MonthlyCalendar from '@/components/plan/MonthlyCalendar'
-import PlanHistory from '@/components/plan/PlanHistory'
+import StatsStrip from '@/components/dashboard/StatsStrip'
+import NextWorkoutCard from '@/components/dashboard/NextWorkoutCard'
+import UpcomingDays from '@/components/dashboard/UpcomingDays'
+import AchievementsCard from '@/components/dashboard/AchievementsCard'
+import ExpiredPlanBanner from '@/components/dashboard/ExpiredPlanBanner'
 import GenerateModal from '@/components/plan/GenerateModal'
 import RegenerateModal from '@/components/plan/RegenerateModal'
+import CompletionModal from '@/components/plan/CompletionModal'
+import SkipModal from '@/components/plan/SkipModal'
+import SuggestionModal from '@/components/plan/SuggestionModal'
 import PlanGeneratingLoader from '@/components/onboarding/PlanGeneratingLoader'
-import type { TrainingPlanRow, TrainingDayRow, PlanFeedback } from '@/lib/supabase/types'
+import type {
+  TrainingPlanRow,
+  TrainingDayRow,
+  PlanFeedback,
+  WorkoutLogRow,
+  CompletionFeedback,
+  SkipReason,
+  WorkoutAdjustment,
+} from '@/lib/supabase/types'
+import type { Achievement } from '@/lib/plan/achievements'
+import type { WeekLoad } from '@/lib/plan/utils'
 import { isPlanExpired } from '@/lib/plan/utils'
 import {
   Plus,
@@ -23,19 +38,34 @@ import {
   AlertCircle,
 } from 'lucide-react'
 
-type Tab = 'today' | 'week' | 'month' | 'history'
 type FlowState = 'idle' | 'loading' | 'error'
 
 interface DashboardContentProps {
   fullName: string | null
   initialPlan: TrainingPlanRow | null
   initialDays: TrainingDayRow[]
+  initialLogs: WorkoutLogRow[]
+  weeklyKm: { current: number; previous: number }
+  streak: number
+  monthCompletion: number
+  weekLoad: WeekLoad
+  next7Days: { date: string; day: TrainingDayRow | null; inPlan: boolean }[]
+  nextWorkout: TrainingDayRow | null
+  achievements: Achievement[]
 }
 
 export default function DashboardContent({
   fullName,
   initialPlan,
   initialDays,
+  initialLogs,
+  weeklyKm,
+  streak,
+  monthCompletion,
+  weekLoad,
+  next7Days,
+  nextWorkout,
+  achievements,
 }: DashboardContentProps) {
   const router = useRouter()
   const locale = useLocale()
@@ -45,7 +75,7 @@ export default function DashboardContent({
 
   const [plan, setPlan] = useState<TrainingPlanRow | null>(initialPlan)
   const [days, setDays] = useState<TrainingDayRow[]>(initialDays)
-  const [activeTab, setActiveTab] = useState<Tab>('today')
+  const [logs, setLogs] = useState<WorkoutLogRow[]>(initialLogs)
   const [flowState, setFlowState] = useState<FlowState>('idle')
   const [generationError, setGenerationError] = useState<string | null>(null)
   const [loading, setLoading] = useState<'reset' | 'logout' | null>(null)
@@ -53,6 +83,11 @@ export default function DashboardContent({
   // Modal state
   const [showGenerateModal, setShowGenerateModal] = useState(false)
   const [showRegenerateModal, setShowRegenerateModal] = useState(false)
+  const [showCompletionModal, setShowCompletionModal] = useState(false)
+  const [showSkipModal, setShowSkipModal] = useState(false)
+  const [showSuggestionModal, setShowSuggestionModal] = useState(false)
+  const [activeDayId, setActiveDayId] = useState<string | null>(null)
+  const [pendingSuggestions, setPendingSuggestions] = useState<WorkoutAdjustment[]>([])
 
   // Generation refs (same pattern as OnboardingFlow)
   const apiDoneRef = useRef(false)
@@ -63,6 +98,12 @@ export default function DashboardContent({
 
   const planExpired = plan ? isPlanExpired(plan) : false
   const remainingRegenerations = Math.max(0, 10 - (plan?.generation_count ?? 0))
+
+  // Convert serialized date strings back to Date objects for UpcomingDays
+  const next7DaysWithDates = next7Days.map(d => ({
+    ...d,
+    date: new Date(d.date),
+  }))
 
   const generatePlan = useCallback(async () => {
     try {
@@ -102,9 +143,6 @@ export default function DashboardContent({
       apiDoneRef.current = true
       if (loaderDoneRef.current) {
         setFlowState(apiSuccessRef.current ? 'idle' : 'error')
-        if (apiSuccessRef.current) {
-          setActiveTab('today')
-        }
       }
     }
   }, [locale])
@@ -126,9 +164,6 @@ export default function DashboardContent({
     loaderDoneRef.current = true
     if (apiDoneRef.current) {
       setFlowState(apiSuccessRef.current ? 'idle' : 'error')
-      if (apiSuccessRef.current) {
-        setActiveTab('today')
-      }
     }
   }, [])
 
@@ -148,6 +183,91 @@ export default function DashboardContent({
   const handleRegenerate = useCallback((feedback?: PlanFeedback) => {
     startGeneration('regenerate', feedback)
   }, [startGeneration])
+
+  const handleMarkComplete = useCallback((dayId: string) => {
+    setActiveDayId(dayId)
+    setShowCompletionModal(true)
+  }, [])
+
+  const handleSkipWorkout = useCallback((dayId: string) => {
+    setActiveDayId(dayId)
+    setShowSkipModal(true)
+  }, [])
+
+  const handleCompletionConfirm = useCallback(async (feedback: CompletionFeedback) => {
+    if (!activeDayId) return
+    setShowCompletionModal(false)
+    try {
+      const response = await fetch('/api/plan/workout/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ training_day_id: activeDayId, feedback }),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setLogs(prev => {
+          const filtered = prev.filter(l => l.training_day_id !== activeDayId)
+          return [...filtered, data.log]
+        })
+      }
+    } catch (error) {
+      console.error('Failed to complete workout:', error)
+    }
+    setActiveDayId(null)
+  }, [activeDayId])
+
+  const handleSkipConfirm = useCallback(async (reason: SkipReason) => {
+    if (!activeDayId) return
+    setShowSkipModal(false)
+    try {
+      const response = await fetch('/api/plan/workout/skip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ training_day_id: activeDayId, reason }),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setLogs(prev => {
+          const filtered = prev.filter(l => l.training_day_id !== activeDayId)
+          return [...filtered, data.log]
+        })
+        if (data.suggestions && data.suggestions.length > 0) {
+          setPendingSuggestions(data.suggestions)
+          setShowSuggestionModal(true)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to skip workout:', error)
+    }
+    setActiveDayId(null)
+  }, [activeDayId])
+
+  const handleAcceptSuggestions = useCallback(async () => {
+    setShowSuggestionModal(false)
+    try {
+      const response = await fetch('/api/plan/workout/adjust', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adjustments: pendingSuggestions }),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        // Update the local days state with adjusted values
+        setDays(prev => prev.map(day => {
+          const updated = (data.updated_days as TrainingDayRow[]).find(u => u.id === day.id)
+          return updated ?? day
+        }))
+      }
+    } catch (error) {
+      console.error('Failed to apply adjustments:', error)
+    }
+    setPendingSuggestions([])
+  }, [pendingSuggestions])
+
+  const handleRejectSuggestions = useCallback(() => {
+    setShowSuggestionModal(false)
+    setPendingSuggestions([])
+  }, [])
 
   const handleResetOnboarding = async () => {
     if (!confirm(t('resetConfirm'))) return
@@ -223,20 +343,13 @@ export default function DashboardContent({
     )
   }
 
-  const tabs: { key: Tab; label: string }[] = [
-    { key: 'today', label: tPlan('tabs.today') },
-    { key: 'week', label: tPlan('tabs.week') },
-    { key: 'month', label: tPlan('tabs.month') },
-    { key: 'history', label: tPlan('tabs.history') },
-  ]
-
   return (
     <>
       <Header showLogin={false} />
       <main className="min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto space-y-6">
           {/* Welcome header */}
-          <div className="mb-6 animate-fade-in">
+          <div className="animate-fade-in">
             <h1 className="text-2xl sm:text-3xl font-bold text-text-primary mb-1">
               {t('welcomeBack')} <span className="gradient-text">{displayName}</span>
             </h1>
@@ -244,6 +357,24 @@ export default function DashboardContent({
               <p className="text-sm text-text-secondary">{plan.title}</p>
             )}
           </div>
+
+          {/* Expired plan banner */}
+          {plan && planExpired && (
+            <ExpiredPlanBanner
+              endDate={plan.ends_at}
+              onGenerateNew={() => setShowGenerateModal(true)}
+            />
+          )}
+
+          {/* Stats strip — show when plan exists */}
+          {plan && (
+            <StatsStrip
+              weeklyKm={weeklyKm}
+              streak={streak}
+              monthCompletion={monthCompletion}
+              weekLoad={weekLoad}
+            />
+          )}
 
           {/* No plan state */}
           {!plan && (
@@ -268,82 +399,55 @@ export default function DashboardContent({
             </div>
           )}
 
-          {/* Plan views */}
+          {/* Workout cards: Today + Next */}
           {plan && (
-            <div className="space-y-6 animate-fade-in">
-              {/* Tabs */}
-              <div className="flex gap-1 p-1 rounded-lg bg-dark-surface border border-dark-border">
-                {tabs.map(tab => (
-                  <button
-                    key={tab.key}
-                    onClick={() => setActiveTab(tab.key)}
-                    className={`
-                      flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors
-                      ${activeTab === tab.key
-                        ? 'bg-accent-primary text-dark-bg'
-                        : 'text-text-secondary hover:text-text-primary hover:bg-dark-border/50'
-                      }
-                    `}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+              <div className="lg:col-span-3">
+                <TodayCard
+                  plan={plan}
+                  days={days}
+                  logs={logs}
+                  onGenerateNew={() => setShowGenerateModal(true)}
+                  onComplete={handleMarkComplete}
+                  onSkip={handleSkipWorkout}
+                />
               </div>
-
-              {/* Tab content */}
-              <div className="rounded-xl border border-dark-border bg-dark-surface p-4 sm:p-6">
-                {activeTab === 'today' && (
-                  <TodayCard
-                    plan={plan}
-                    days={days}
-                    onGenerateNew={() => setShowGenerateModal(true)}
-                  />
-                )}
-                {activeTab === 'week' && (
-                  <WeeklyView plan={plan} days={days} />
-                )}
-                {activeTab === 'month' && (
-                  <MonthlyCalendar plan={plan} days={days} />
-                )}
-                {activeTab === 'history' && (
-                  <PlanHistory />
-                )}
+              <div className="lg:col-span-2">
+                <NextWorkoutCard workout={nextWorkout} />
               </div>
+            </div>
+          )}
 
-              {/* Action buttons */}
-              {activeTab !== 'history' && (
-                <div className="flex flex-col sm:flex-row gap-3">
-                  {planExpired && (
-                    <Button
-                      variant="primary"
-                      onClick={() => setShowGenerateModal(true)}
-                      className="flex items-center justify-center gap-2"
-                    >
-                      <Plus className="w-4 h-4" />
-                      {tPlan('actions.generateNew')}
-                    </Button>
-                  )}
-                  {!planExpired && (
-                    <Button
-                      variant="secondary"
-                      onClick={() => setShowRegenerateModal(true)}
-                      disabled={remainingRegenerations <= 0}
-                      className="flex items-center justify-center gap-2"
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                      {tPlan('actions.regenerate')}
-                      <span className="text-xs opacity-70">
-                        ({tPlan('actions.remaining', { count: remainingRegenerations })})
-                      </span>
-                    </Button>
-                  )}
-                </div>
-              )}
+          {/* Upcoming days */}
+          {plan && next7DaysWithDates.length > 0 && (
+            <UpcomingDays days={next7DaysWithDates} logs={logs} />
+          )}
+
+          {/* Achievements */}
+          {plan && (
+            <AchievementsCard achievements={achievements} />
+          )}
+
+          {/* Regenerate button — only when plan is active */}
+          {plan && !planExpired && (
+            <div className="flex">
+              <Button
+                variant="secondary"
+                onClick={() => setShowRegenerateModal(true)}
+                disabled={remainingRegenerations <= 0}
+                className="flex items-center justify-center gap-2"
+              >
+                <RefreshCw className="w-4 h-4" />
+                {tPlan('actions.regenerate')}
+                <span className="text-xs opacity-70">
+                  ({tPlan('actions.remaining', { count: remainingRegenerations })})
+                </span>
+              </Button>
             </div>
           )}
 
           {/* Quick actions */}
-          <div className="mt-8 rounded-xl border border-dark-border bg-dark-surface p-4 sm:p-6 animate-slide-up">
+          <div className="rounded-xl border border-dark-border bg-dark-surface p-4 sm:p-6 animate-slide-up">
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-lg bg-dark-border shrink-0">
                 <Settings className="w-5 h-5 text-accent-primary" />
@@ -388,6 +492,24 @@ export default function DashboardContent({
         onClose={() => setShowRegenerateModal(false)}
         onConfirm={handleRegenerate}
         remainingCount={remainingRegenerations}
+      />
+      <CompletionModal
+        isOpen={showCompletionModal}
+        onClose={() => { setShowCompletionModal(false); setActiveDayId(null) }}
+        onConfirm={handleCompletionConfirm}
+      />
+      <SkipModal
+        isOpen={showSkipModal}
+        onClose={() => { setShowSkipModal(false); setActiveDayId(null) }}
+        onConfirm={handleSkipConfirm}
+      />
+      <SuggestionModal
+        isOpen={showSuggestionModal}
+        onClose={() => { setShowSuggestionModal(false); setPendingSuggestions([]) }}
+        onAccept={handleAcceptSuggestions}
+        onReject={handleRejectSuggestions}
+        suggestions={pendingSuggestions}
+        days={days}
       />
     </>
   )
