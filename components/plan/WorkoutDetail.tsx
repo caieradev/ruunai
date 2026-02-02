@@ -1,22 +1,38 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import type { TrainingDayRow } from '@/lib/supabase/types'
+import type { TrainingDayRow, WorkoutLogRow } from '@/lib/supabase/types'
 import { getWorkoutColor, getWorkoutBgLight } from '@/lib/plan/utils'
-import { Clock, Ruler, Gauge, Flame, Snowflake } from 'lucide-react'
+import { Clock, Ruler, Gauge, Flame, Snowflake, CheckCircle2, XCircle } from 'lucide-react'
 
 interface WorkoutDetailProps {
   day: TrainingDayRow
   compact?: boolean
+  log?: WorkoutLogRow | null
 }
 
-export default function WorkoutDetail({ day, compact = false }: WorkoutDetailProps) {
+export default function WorkoutDetail({ day, compact = false, log }: WorkoutDetailProps) {
   const t = useTranslations('plan')
   const workoutColor = getWorkoutColor(day.workout_type)
   const bgLight = getWorkoutBgLight(day.workout_type)
 
   return (
     <div className="space-y-4">
+      {/* Status badge if log exists */}
+      {log && (
+        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-sm text-xs font-medium ${
+          log.status === 'completed'
+            ? 'bg-green-500/20 text-green-400'
+            : 'bg-red-500/20 text-red-400'
+        }`}>
+          {log.status === 'completed' ? (
+            <CheckCircle2 className="w-3.5 h-3.5" />
+          ) : (
+            <XCircle className="w-3.5 h-3.5" />
+          )}
+          {t(`log.${log.status}`)}
+        </div>
+      )}
       <span className={`inline-flex items-center px-3 py-1 rounded-sm text-xs font-medium ${bgLight} ${workoutColor}`}>
         {t(`workoutTypes.${day.workout_type}`)}
       </span>
