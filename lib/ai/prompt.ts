@@ -20,9 +20,52 @@ function buildDayNumberToWeekdayMap(startDate: string): Record<number, string> {
   return map
 }
 
-function buildTrainingDayNumbers(startDate: string, preferredDays?: string[]): number[] {
+function* combinations(arr: number[], k: number, start = 0, current: number[] = []): Generator<number[]> {
+  if (current.length === k) { yield [...current]; return }
+  for (let i = start; i <= arr.length - (k - current.length); i++) {
+    current.push(arr[i])
+    yield* combinations(arr, k, i + 1, current)
+    current.pop()
+  }
+}
+
+function selectOptimalDays(preferredDays: string[], daysPerWeek: number): string[] {
+  if (preferredDays.length <= daysPerWeek) return preferredDays
+
+  const indices = preferredDays.map(d =>
+    DAYS_OF_WEEK.indexOf(d.toLowerCase() as (typeof DAYS_OF_WEEK)[number])
+  )
+
+  let bestCombo = indices.slice(0, daysPerWeek)
+  let bestMinGap = -1
+
+  for (const combo of combinations(indices, daysPerWeek)) {
+    const sorted = [...combo].sort((a, b) => a - b)
+    let minGap = Infinity
+    for (let i = 0; i < sorted.length; i++) {
+      const nextIdx = (i + 1) % sorted.length
+      const gap = nextIdx === 0
+        ? 7 - sorted[sorted.length - 1] + sorted[0]
+        : sorted[nextIdx] - sorted[i]
+      minGap = Math.min(minGap, gap)
+    }
+    if (minGap > bestMinGap) {
+      bestMinGap = minGap
+      bestCombo = combo
+    }
+  }
+
+  return bestCombo.map(i => DAYS_OF_WEEK[i])
+}
+
+function buildTrainingDayNumbers(startDate: string, preferredDays?: string[], daysPerWeek?: number): number[] {
   if (!preferredDays || preferredDays.length === 0) return []
-  const preferred = new Set(preferredDays.map(d => d.toLowerCase()))
+
+  const selectedDays = daysPerWeek && daysPerWeek < preferredDays.length
+    ? selectOptimalDays(preferredDays, daysPerWeek)
+    : preferredDays
+
+  const preferred = new Set(selectedDays.map(d => d.toLowerCase()))
   const result: number[] = []
   const start = new Date(startDate + 'T00:00:00')
   for (let i = 0; i < 30; i++) {
@@ -71,7 +114,7 @@ export function buildPlanInput(
       duration_days: 30,
       language,
       day_number_to_weekday: buildDayNumberToWeekdayMap(startDate),
-      training_day_numbers: buildTrainingDayNumbers(startDate, onboardingData.preferredDays),
+      training_day_numbers: buildTrainingDayNumbers(startDate, onboardingData.preferredDays, onboardingData.daysPerWeek),
     },
     previous_plan_summary: previousPlanSummary,
     feedback,
@@ -104,15 +147,45 @@ export function buildPreviousPlanSummary(
 }
 
 export function buildSystemPrompt(): string {
-  return `You are an expert running coach AI. You create personalized 30-day training plans.
+  return `You are an expert running coach AI. You create personalized 30-day training plans that are part of a larger periodized training program.
 
-CRITICAL — TRAINING DAY SELECTION:
-- The input includes "plan_config.training_day_numbers" — this is the PRE-CALCULATED list of day_number values that fall on the runner's preferred weekdays.
-- You MUST ONLY use day_number values from this list. Do NOT assign workouts to any other day_number.
-- The input also includes "plan_config.day_number_to_weekday" which maps every day_number (1-30) to its weekday. Use this to verify your output.
-- Example: if training_day_numbers is [1, 3, 5, 8, 10, 12, 15, 17, 19, 22, 24, 26, 29], your "days" array must ONLY contain entries with those day_number values.
+PERIODIZATION & CONTINUITY:
+- Every plan is ONE PHASE (30 days) of a longer training program aligned with the runner's goal.
+- Analyze runner_profile.goal and runner_profile.event_date to determine the training context:
+  - Calculate the number of weeks between plan_config.start_date and event_date.
+  - Estimate the total number of 30-day phases needed to reach the goal.
+  - Assign the appropriate phase based on whether previous_plan_summary exists (if it does, this is a continuation; if not, this is phase 1).
+- Standard periodization phases for race goals:
+  - "Base Building" — build aerobic base, increase mileage gradually, mostly easy runs.
+  - "Build" — introduce tempo and intervals, increase intensity while maintaining volume.
+  - "Peak" — highest intensity and volume, race-specific workouts.
+  - "Taper" — reduce volume 2-3 weeks before the event, maintain intensity.
+- For GENERAL_FITNESS goal (no event_date): use "Conditioning" as phase_name. Each plan is phase N of an ongoing program. total_phases_estimate should be 0 to indicate continuous/ongoing.
+- The plan description MUST clearly explain what phase this is, what the runner achieved so far (if previous_plan_summary exists), and what to expect in subsequent phases. The runner must understand this is NOT their entire program — more plans will follow to reach their goal.
+- If phase_number equals 1 and previous_plan_summary is null, the description should introduce the full training journey ahead.
 
-RULES:
+TRAINING DAY SELECTION:
+- "plan_config.training_day_numbers" is the PRE-CALCULATED list of day_number values where the runner should train. These already match the runner's days_per_week preference and preferred weekdays.
+- You MUST assign workouts to ALL day_numbers in training_day_numbers. Do NOT skip days and do NOT assign workouts to day_numbers outside this list.
+- The ONLY exception: you MAY skip some training_day_numbers if:
+  - The runner is a beginner with low weekly volume and you assess overload risk.
+  - Feedback indicates the runner found the previous plan too hard or got injured.
+  - The plan is in a taper/recovery phase.
+  - If you skip days, you MUST explain WHY in the plan description.
+- Use "plan_config.day_number_to_weekday" to verify which weekday each day_number corresponds to.
+
+WORKOUT DATA — ALL FIELDS REQUIRED:
+- Every workout in the "days" array MUST include distance_km, duration_minutes, AND target_pace. No exceptions.
+- distance_km: the total distance for the session in kilometers (number, e.g. 8.0). For cross_training, use 0.
+- duration_minutes: the total estimated duration in minutes (integer, e.g. 45). Always required.
+- target_pace: MUST be a numeric pace string in one of these formats:
+  - Single pace: "5:30 /km"
+  - Pace range: "5:30-6:00 /km"
+  - For interval workouts: use the pace for the fast intervals (e.g. "4:30-4:45 /km")
+  - For cross_training: use "N/A"
+  - NEVER use descriptive text like "comfortable", "easy effort", "conversational pace". Always use numeric min:sec format.
+
+GENERAL RULES:
 - Generate a JSON training plan following the exact schema provided.
 - Only include training days in the "days" array. Do NOT include rest days — any day not in the array is automatically a rest day.
 - day_number starts at 1 (first day of the plan) and goes up to 30.
@@ -120,18 +193,21 @@ RULES:
 - Account for injuries by avoiding aggravating workouts and including injury-prevention notes.
 - workout_type must be one of: easy_run, tempo, intervals, long_run, recovery, cross_training, race_pace
 - All text content MUST be in the language specified in plan_config.language.
-- If previous_plan_summary is provided, create a plan that builds on it with slight variations for progression and adaptability.
+- If previous_plan_summary is provided, create a plan that builds on it with progression appropriate to the current phase.
 - If feedback is provided, adjust the plan based on the runner's feedback (difficulty, volume, variety, injuries, comments).
-- Include progressive overload: gradually increase volume/intensity across the 4 weeks.
-- Include a recovery/taper in the last few days if appropriate.
+- Include progressive overload within the 30-day phase: gradually increase volume/intensity across the 4 weeks.
+- Include recovery days/weeks as appropriate for the training phase.
 - Be specific with paces, distances, warmup/cooldown instructions.
 
 OUTPUT SCHEMA:
 {
   "plan_overview": {
-    "title": "string - plan name",
-    "description": "string - 2-3 sentence plan description",
-    "weekly_summary": "string - brief weekly structure overview"
+    "title": "string - plan name including phase context (e.g. 'Half Marathon Prep — Base Building')",
+    "description": "string - 3-5 sentences explaining: what phase this is, its purpose, what comes next. Must set expectations for the full training journey.",
+    "weekly_summary": "string - brief weekly structure overview for this 30-day phase",
+    "phase_name": "string - one of: 'Base Building', 'Build', 'Peak', 'Taper', 'Conditioning'",
+    "phase_number": "integer - which phase this is (1, 2, 3, ...)",
+    "total_phases_estimate": "integer - estimated total phases to reach the goal (0 for GENERAL_FITNESS = ongoing)"
   },
   "days": [
     {
@@ -139,9 +215,9 @@ OUTPUT SCHEMA:
       "workout_type": "string - one of the allowed types",
       "title": "string - workout name",
       "description": "string - detailed workout description",
-      "distance_km": "number - distance in km (optional)",
-      "duration_minutes": "integer - estimated duration (optional)",
-      "target_pace": "string - pace range like '5:30-6:00 /km' (optional)",
+      "distance_km": "number - REQUIRED - total distance in km (0 for cross_training)",
+      "duration_minutes": "integer - REQUIRED - estimated total duration in minutes",
+      "target_pace": "string - REQUIRED - pace in 'X:XX /km' or 'X:XX-X:XX /km' format ('N/A' for cross_training only)",
       "warmup": "string - warmup instructions (optional)",
       "cooldown": "string - cooldown instructions (optional)",
       "notes": "string - additional notes (optional)"

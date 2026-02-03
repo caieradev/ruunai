@@ -36,6 +36,7 @@ function validateGeminiOutput(output: unknown): output is GeminiPlanOutput {
   if (!o.plan_overview || typeof o.plan_overview !== 'object') return false
   const overview = o.plan_overview as Record<string, unknown>
   if (typeof overview.title !== 'string' || typeof overview.description !== 'string' || typeof overview.weekly_summary !== 'string') return false
+  if (typeof overview.phase_name !== 'string' || typeof overview.phase_number !== 'number' || typeof overview.total_phases_estimate !== 'number') return false
 
   if (!Array.isArray(o.days)) return false
   for (const day of o.days) {
@@ -44,6 +45,9 @@ function validateGeminiOutput(output: unknown): output is GeminiPlanOutput {
     if (typeof d.day_number !== 'number' || d.day_number < 1 || d.day_number > 30) return false
     if (!ALLOWED_WORKOUT_TYPES.includes(d.workout_type as typeof ALLOWED_WORKOUT_TYPES[number])) return false
     if (typeof d.title !== 'string' || typeof d.description !== 'string') return false
+    if (typeof d.distance_km !== 'number') return false
+    if (typeof d.duration_minutes !== 'number') return false
+    if (typeof d.target_pace !== 'string') return false
   }
 
   return true
@@ -245,6 +249,9 @@ export async function POST(request: Request) {
         title: truncateString(planOutput.plan_overview.title, MAX_STRING_LENGTH),
         description: truncateString(planOutput.plan_overview.description, MAX_STRING_LENGTH),
         weekly_summary: truncateString(planOutput.plan_overview.weekly_summary, MAX_STRING_LENGTH),
+        phase_name: truncateString(planOutput.plan_overview.phase_name, MAX_STRING_LENGTH),
+        phase_number: planOutput.plan_overview.phase_number,
+        total_phases_estimate: planOutput.plan_overview.total_phases_estimate,
       })
       .eq('id', newPlan.id)
 

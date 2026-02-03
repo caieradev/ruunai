@@ -48,6 +48,9 @@ export interface GeminiPlanOutput {
     title: string
     description: string
     weekly_summary: string
+    phase_name: string
+    phase_number: number
+    total_phases_estimate: number
   }
   days: GeminiDayOutput[]
 }
@@ -57,9 +60,9 @@ export interface GeminiDayOutput {
   workout_type: string
   title: string
   description: string
-  distance_km?: number
-  duration_minutes?: number
-  target_pace?: string
+  distance_km: number
+  duration_minutes: number
+  target_pace: string
   warmup?: string
   cooldown?: string
   notes?: string

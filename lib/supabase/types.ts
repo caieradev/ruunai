@@ -82,6 +82,9 @@ export interface TrainingPlanRow {
   title: string | null
   description: string | null
   weekly_summary: string | null
+  phase_name: string | null
+  phase_number: number | null
+  total_phases_estimate: number | null
   language: string
   starts_at: string
   ends_at: string
