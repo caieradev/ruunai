@@ -7,7 +7,7 @@ import WorkoutDetail from './WorkoutDetail'
 import RestDayCard from './RestDayCard'
 import PlanExpiredCard from './PlanExpiredCard'
 import Button from '@/components/ui/Button'
-import { Calendar, CheckCircle2, XCircle } from 'lucide-react'
+import { Calendar } from 'lucide-react'
 
 interface TodayCardProps {
   plan: TrainingPlanRow
@@ -41,22 +41,6 @@ export default function TodayCard({ plan, days, logs, onGenerateNew, onComplete,
 
       {todayWorkout ? (
         <div className="mt-4">
-          {/* Status badge */}
-          {todayLog && (
-            <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-sm text-xs font-medium mb-3 ${
-              todayLog.status === 'completed'
-                ? 'bg-green-500/20 text-green-400'
-                : 'bg-red-500/20 text-red-400'
-            }`}>
-              {todayLog.status === 'completed' ? (
-                <CheckCircle2 className="w-3.5 h-3.5" />
-              ) : (
-                <XCircle className="w-3.5 h-3.5" />
-              )}
-              {t(`log.${todayLog.status}`)}
-            </div>
-          )}
-
           <h2 className="text-xl font-bold text-text-primary mb-4">
             {todayWorkout.title}
           </h2>

@@ -23,7 +23,11 @@ export default function RegenerateModal({ isOpen, onClose, onConfirm, remainingC
   useEffect(() => {
     if (!isOpen) return
     document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = ''
+    }
   }, [isOpen, handleKeyDown])
 
   if (!isOpen) return null
@@ -36,7 +40,7 @@ export default function RegenerateModal({ isOpen, onClose, onConfirm, remainingC
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm overflow-y-auto"
       onClick={handleOverlayClick}
       role="dialog"
       aria-modal="true"

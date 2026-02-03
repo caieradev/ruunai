@@ -169,7 +169,7 @@ export async function POST(request: Request) {
         ends_at: endDate,
         feedback: validatedFeedback ?? null,
         previous_plan_id: activePlan?.id ?? null,
-        generation_count: validatedType === 'regenerate' ? (activePlan?.generation_count ?? 0) + 1 : 1,
+        generation_count: validatedType === 'regenerate' ? (activePlan?.generation_count ?? 0) + 1 : 0,
       })
       .select('id')
       .single()

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useLocale } from 'next-intl'
@@ -13,7 +13,6 @@ import UpcomingDays from '@/components/dashboard/UpcomingDays'
 import AchievementsCard from '@/components/dashboard/AchievementsCard'
 import ExpiredPlanBanner from '@/components/dashboard/ExpiredPlanBanner'
 import GenerateModal from '@/components/plan/GenerateModal'
-import RegenerateModal from '@/components/plan/RegenerateModal'
 import CompletionModal from '@/components/plan/CompletionModal'
 import SkipModal from '@/components/plan/SkipModal'
 import SuggestionModal from '@/components/plan/SuggestionModal'
@@ -28,11 +27,19 @@ import type {
   WorkoutAdjustment,
 } from '@/lib/supabase/types'
 import type { Achievement } from '@/lib/plan/achievements'
+import { getAchievements } from '@/lib/plan/achievements'
 import type { WeekLoad } from '@/lib/plan/utils'
-import { isPlanExpired } from '@/lib/plan/utils'
+import {
+  isPlanExpired,
+  getWeeklyKm,
+  getStreak,
+  getMonthCompletion,
+  getWeekLoad,
+  getNext7Days,
+  getNextWorkout,
+} from '@/lib/plan/utils'
 import {
   Plus,
-  RefreshCw,
   LogOut,
   Settings,
   AlertCircle,
@@ -45,13 +52,6 @@ interface DashboardContentProps {
   initialPlan: TrainingPlanRow | null
   initialDays: TrainingDayRow[]
   initialLogs: WorkoutLogRow[]
-  weeklyKm: { current: number; previous: number }
-  streak: number
-  monthCompletion: number
-  weekLoad: WeekLoad
-  next7Days: { date: string; day: TrainingDayRow | null; inPlan: boolean }[]
-  nextWorkout: TrainingDayRow | null
-  achievements: Achievement[]
 }
 
 export default function DashboardContent({
@@ -59,13 +59,6 @@ export default function DashboardContent({
   initialPlan,
   initialDays,
   initialLogs,
-  weeklyKm,
-  streak,
-  monthCompletion,
-  weekLoad,
-  next7Days,
-  nextWorkout,
-  achievements,
 }: DashboardContentProps) {
   const router = useRouter()
   const locale = useLocale()
@@ -82,7 +75,6 @@ export default function DashboardContent({
 
   // Modal state
   const [showGenerateModal, setShowGenerateModal] = useState(false)
-  const [showRegenerateModal, setShowRegenerateModal] = useState(false)
   const [showCompletionModal, setShowCompletionModal] = useState(false)
   const [showSkipModal, setShowSkipModal] = useState(false)
   const [showSuggestionModal, setShowSuggestionModal] = useState(false)
@@ -97,13 +89,21 @@ export default function DashboardContent({
   const feedbackRef = useRef<PlanFeedback | undefined>(undefined)
 
   const planExpired = plan ? isPlanExpired(plan) : false
-  const remainingRegenerations = Math.max(0, 10 - (plan?.generation_count ?? 0))
 
-  // Convert serialized date strings back to Date objects for UpcomingDays
-  const next7DaysWithDates = next7Days.map(d => ({
-    ...d,
-    date: new Date(d.date),
-  }))
+  // Derive stats from current state so they recompute after plan generation
+  const weeklyKm = useMemo(() => getWeeklyKm(days, logs), [days, logs])
+  const streak = useMemo(() => getStreak(days, logs), [days, logs])
+  const monthCompletion = useMemo(() => getMonthCompletion(days, logs), [days, logs])
+  const weekLoad = useMemo(() => getWeekLoad(days), [days])
+  const next7DaysWithDates = useMemo(
+    () => plan ? getNext7Days(days, plan.starts_at, plan.ends_at) : [],
+    [days, plan]
+  )
+  const nextWorkout = useMemo(() => getNextWorkout(days, logs), [days, logs])
+  const achievements = useMemo(
+    () => getAchievements(days, logs, streak, monthCompletion),
+    [days, logs, streak, monthCompletion]
+  )
 
   const generatePlan = useCallback(async () => {
     try {
@@ -155,7 +155,6 @@ export default function DashboardContent({
     feedbackRef.current = feedback
     setGenerationError(null)
     setShowGenerateModal(false)
-    setShowRegenerateModal(false)
     setFlowState('loading')
     generatePlan()
   }, [generatePlan])
@@ -178,10 +177,6 @@ export default function DashboardContent({
 
   const handleGenerateNew = useCallback((feedback?: PlanFeedback) => {
     startGeneration('new', feedback)
-  }, [startGeneration])
-
-  const handleRegenerate = useCallback((feedback?: PlanFeedback) => {
-    startGeneration('regenerate', feedback)
   }, [startGeneration])
 
   const handleMarkComplete = useCallback((dayId: string) => {
@@ -428,24 +423,6 @@ export default function DashboardContent({
             <AchievementsCard achievements={achievements} />
           )}
 
-          {/* Regenerate button — only when plan is active */}
-          {plan && !planExpired && (
-            <div className="flex">
-              <Button
-                variant="secondary"
-                onClick={() => setShowRegenerateModal(true)}
-                disabled={remainingRegenerations <= 0}
-                className="flex items-center justify-center gap-2"
-              >
-                <RefreshCw className="w-4 h-4" />
-                {tPlan('actions.regenerate')}
-                <span className="text-xs opacity-70">
-                  ({tPlan('actions.remaining', { count: remainingRegenerations })})
-                </span>
-              </Button>
-            </div>
-          )}
-
           {/* Quick actions */}
           <div className="rounded-xl border border-dark-border bg-dark-surface p-4 sm:p-6 animate-slide-up">
             <div className="flex items-start gap-4">
@@ -486,12 +463,6 @@ export default function DashboardContent({
         onClose={() => setShowGenerateModal(false)}
         onConfirm={handleGenerateNew}
         showFeedback={!!plan && !planExpired}
-      />
-      <RegenerateModal
-        isOpen={showRegenerateModal}
-        onClose={() => setShowRegenerateModal(false)}
-        onConfirm={handleRegenerate}
-        remainingCount={remainingRegenerations}
       />
       <CompletionModal
         isOpen={showCompletionModal}

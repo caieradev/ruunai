@@ -18,38 +18,39 @@ export default function WorkoutDetail({ day, compact = false, log }: WorkoutDeta
 
   return (
     <div className="space-y-4">
-      {/* Status badge if log exists */}
-      {log && (
-        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-sm text-xs font-medium ${
-          log.status === 'completed'
-            ? 'bg-green-500/20 text-green-400'
-            : 'bg-red-500/20 text-red-400'
-        }`}>
-          {log.status === 'completed' ? (
-            <CheckCircle2 className="w-3.5 h-3.5" />
-          ) : (
-            <XCircle className="w-3.5 h-3.5" />
-          )}
-          {t(`log.${log.status}`)}
-        </div>
-      )}
-      <span className={`inline-flex items-center px-3 py-1 rounded-sm text-xs font-medium ${bgLight} ${workoutColor}`}>
-        {t(`workoutTypes.${day.workout_type}`)}
-      </span>
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className={`inline-flex items-center px-3 py-1 rounded-sm text-xs font-medium ${bgLight} ${workoutColor}`}>
+          {t(`workoutTypes.${day.workout_type}`)}
+        </span>
+        {log && (
+          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border ${
+            log.status === 'completed'
+              ? 'border-green-500/30 text-green-400'
+              : 'border-red-500/30 text-red-400'
+          }`}>
+            {log.status === 'completed' ? (
+              <CheckCircle2 className="w-3 h-3" />
+            ) : (
+              <XCircle className="w-3 h-3" />
+            )}
+            {t(`log.${log.status}`)}
+          </span>
+        )}
+      </div>
       <div className="flex items-center gap-3">
-        {day.distance_km && (
+        {day.distance_km != null && (
           <span className="flex items-center gap-1 text-sm text-text-secondary">
             <Ruler className="w-3.5 h-3.5" />
             {day.distance_km} km
           </span>
         )}
-        {day.duration_minutes && (
+        {day.duration_minutes != null && (
           <span className="flex items-center gap-1 text-sm text-text-secondary">
             <Clock className="w-3.5 h-3.5" />
             {day.duration_minutes} min
           </span>
         )}
-        {day.target_pace && (
+        {day.target_pace != null && (
           <span className="flex items-center gap-1 text-sm text-text-secondary">
             <Gauge className="w-3.5 h-3.5" />
             {day.target_pace}

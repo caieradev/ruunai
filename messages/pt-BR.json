@@ -415,6 +415,8 @@
       "title": "Seu Plano Acabou",
       "message": "Seu plano de treino de 30 dias foi concluído. Gere um novo para continuar evoluindo!"
     },
+    "showMore": "Ver mais",
+    "showLess": "Ver menos",
     "noPlan": {
       "title": "Nenhum Plano Ativo",
       "message": "Gere seu primeiro plano de treino com IA para começar!",
@@ -423,6 +425,7 @@
     "actions": {
       "generateNew": "Gerar Novo Plano",
       "regenerate": "Regenerar Plano",
+      "regenerateHint": "Não está satisfeito com o plano?",
       "remaining": "{count} de 10 restantes"
     },
     "generateModal": {

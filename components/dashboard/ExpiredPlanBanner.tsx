@@ -18,8 +18,8 @@ export default function ExpiredPlanBanner({ endDate, onGenerateNew }: ExpiredPla
   const date = new Date(endDate + 'T00:00:00')
 
   return (
-    <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-      <div className="flex items-center gap-3">
+    <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 flex items-center justify-between gap-3">
+      <div className="flex items-center gap-3 min-w-0">
         <AlertCircle className="w-5 h-5 text-yellow-400 shrink-0" />
         <p className="text-sm text-yellow-200">
           {t('message', { date: formatDate(date, locale) })}
@@ -32,7 +32,7 @@ export default function ExpiredPlanBanner({ endDate, onGenerateNew }: ExpiredPla
         className="flex items-center gap-2 shrink-0"
       >
         <Plus className="w-4 h-4" />
-        {t('generate')}
+        <span className="hidden sm:inline">{t('generate')}</span>
       </Button>
     </div>
   )

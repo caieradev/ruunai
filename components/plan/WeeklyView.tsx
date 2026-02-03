@@ -7,7 +7,7 @@ import type { TrainingPlanRow, TrainingDayRow, WorkoutLogRow } from '@/lib/supab
 import { getWeekDays, getWorkoutBgColor, getDayName, isToday } from '@/lib/plan/utils'
 import WorkoutDetail from './WorkoutDetail'
 import RestDayCard from './RestDayCard'
-import { ChevronLeft, ChevronRight, Moon, Check, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Moon } from 'lucide-react'
 
 interface WeeklyViewProps {
   plan: TrainingPlanRow
@@ -101,38 +101,40 @@ export default function WeeklyView({ plan, days, logs, initialDate }: WeeklyView
           const isSelected = selectedDate === dateStr
           const dayLog = day ? logs.find(l => l.training_day_id === day.id) : null
 
+          const isCompleted = dayLog?.status === 'completed'
+          const isSkipped = dayLog?.status === 'skipped'
+
           return (
             <button
               key={dateStr}
               onClick={() => inPlan && setSelectedDate(dateStr)}
               disabled={!inPlan}
               className={`
-                relative flex flex-col items-center p-2 rounded-lg transition-all text-center
+                flex flex-col items-center p-2 rounded-lg transition-all text-center
                 ${!inPlan ? 'opacity-30 cursor-default' : 'cursor-pointer'}
                 ${today ? 'ring-2 ring-accent-primary' : ''}
                 ${isSelected ? 'bg-dark-border' : inPlan ? 'hover:bg-dark-border/50' : ''}
+                ${isCompleted ? 'bg-green-400/10 ring-1 ring-green-500/30' : ''}
+                ${isSkipped ? 'bg-red-400/10 ring-1 ring-red-500/30' : ''}
               `}
             >
               <span className="text-[10px] text-text-muted uppercase">
                 {getDayName(date, locale)}
               </span>
-              <span className={`text-sm font-medium mt-0.5 ${today ? 'text-accent-primary' : 'text-text-primary'}`}>
+              <span className={`text-sm font-medium mt-0.5 ${
+                isCompleted ? 'text-green-400' :
+                isSkipped ? 'text-red-400/70' :
+                today ? 'text-accent-primary' :
+                'text-text-primary'
+              }`}>
                 {date.getDate()}
               </span>
               {day ? (
-                <div className={`w-2 h-2 rounded-full mt-1.5 ${getWorkoutBgColor(day.workout_type)}`} />
+                <div className={`w-2 h-2 rounded-full mt-1.5 ${
+                  isSkipped ? 'bg-red-400/40' : getWorkoutBgColor(day.workout_type)
+                }`} />
               ) : (
                 <Moon className="w-2 h-2 mt-1.5 text-dark-muted" />
-              )}
-              {/* Log status overlay */}
-              {dayLog && (
-                <div className="absolute top-0.5 right-0.5">
-                  {dayLog.status === 'completed' ? (
-                    <Check className="w-3 h-3 text-green-400" />
-                  ) : (
-                    <X className="w-3 h-3 text-red-400" />
-                  )}
-                </div>
               )}
             </button>
           )

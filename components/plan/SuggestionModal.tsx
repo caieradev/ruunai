@@ -78,7 +78,7 @@ export default function SuggestionModal({
                       <p>{tWorkout(originalDay.workout_type)}</p>
                       {originalDay.distance_km != null && <p>{originalDay.distance_km} km</p>}
                       {originalDay.duration_minutes != null && <p>{originalDay.duration_minutes} min</p>}
-                      {originalDay.target_pace && <p>{originalDay.target_pace}</p>}
+                      {originalDay.target_pace != null && <p>{originalDay.target_pace}</p>}
                     </div>
                   </div>
                   {/* Suggested */}
@@ -96,7 +96,7 @@ export default function SuggestionModal({
                           {suggestion.duration_minutes !== undefined ? suggestion.duration_minutes : originalDay.duration_minutes} min
                         </p>
                       )}
-                      {(suggestion.target_pace !== undefined ? suggestion.target_pace : originalDay.target_pace) && (
+                      {(suggestion.target_pace !== undefined ? suggestion.target_pace : originalDay.target_pace) != null && (
                         <p>{suggestion.target_pace !== undefined ? suggestion.target_pace : originalDay.target_pace}</p>
                       )}
                     </div>

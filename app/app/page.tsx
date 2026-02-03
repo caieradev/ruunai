@@ -2,15 +2,6 @@ import { redirect } from 'next/navigation'
 import { getSupabaseServerClient } from '@/lib/supabase/server'
 import DashboardContent from '@/components/dashboard/DashboardContent'
 import type { TrainingPlanRow, TrainingDayRow, WorkoutLogRow } from '@/lib/supabase/types'
-import {
-  getWeeklyKm,
-  getStreak,
-  getMonthCompletion,
-  getWeekLoad,
-  getNext7Days,
-  getNextWorkout,
-} from '@/lib/plan/utils'
-import { getAchievements } from '@/lib/plan/achievements'
 
 interface RunnerProfile {
   full_name: string | null
@@ -74,33 +65,12 @@ export default async function AppPage() {
     }
   }
 
-  // Compute stats server-side
-  const weeklyKm = getWeeklyKm(days, logs)
-  const streak = getStreak(days, logs)
-  const monthCompletion = getMonthCompletion(days, logs)
-  const weekLoad = getWeekLoad(days)
-  const next7Days = typedPlan
-    ? getNext7Days(days, typedPlan.starts_at, typedPlan.ends_at).map(d => ({
-        ...d,
-        date: d.date.toISOString(),
-      }))
-    : []
-  const nextWorkout = getNextWorkout(days, logs)
-  const achievements = getAchievements(days, logs, streak, monthCompletion)
-
   return (
     <DashboardContent
       fullName={typedRunner?.full_name ?? null}
       initialPlan={typedPlan}
       initialDays={days}
       initialLogs={logs}
-      weeklyKm={weeklyKm}
-      streak={streak}
-      monthCompletion={monthCompletion}
-      weekLoad={weekLoad}
-      next7Days={next7Days}
-      nextWorkout={nextWorkout}
-      achievements={achievements}
     />
   )
 }

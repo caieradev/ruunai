@@ -7,7 +7,7 @@ import type { TrainingPlanRow, TrainingDayRow, WorkoutLogRow } from '@/lib/supab
 import type { WorkoutType } from '@/lib/supabase/types'
 import { getWorkoutBgColor, getWorkoutBgLight, getWorkoutColor, isToday } from '@/lib/plan/utils'
 import WorkoutDetail from './WorkoutDetail'
-import { Moon, Check, X } from 'lucide-react'
+import { Moon } from 'lucide-react'
 
 interface MonthlyCalendarProps {
   plan: TrainingPlanRow
@@ -100,35 +100,37 @@ export default function MonthlyCalendar({ plan, days, logs }: MonthlyCalendarPro
 
                 if (day) {
                   const dayLog = logs.find(l => l.training_day_id === day.id)
+                  const isCompleted = dayLog?.status === 'completed'
+                  const isSkipped = dayLog?.status === 'skipped'
                   // Training day — colored block
                   return (
                     <button
                       key={dateStr}
                       onClick={() => setSelectedDate(isSelected ? null : dateStr)}
                       className={`
-                        relative aspect-square rounded-lg ${getCalendarBg(day.workout_type)}
+                        aspect-square rounded-lg ${isSkipped ? 'bg-red-400/15' : getCalendarBg(day.workout_type)}
                         flex flex-col items-center justify-center gap-0.5
                         transition-all hover:scale-105 hover:shadow-lg cursor-pointer
                         ${today ? 'ring-2 ring-accent-primary' : ''}
                         ${isSelected ? 'ring-2 ring-text-primary scale-105 shadow-lg' : ''}
+                        ${isCompleted ? 'ring-2 ring-green-500/50' : ''}
+                        ${isSkipped ? 'ring-2 ring-red-500/40' : ''}
                       `}
                       title={day.title}
                     >
-                      <span className={` font-bold ${today ? 'text-accent-primary' : getWorkoutColor(day.workout_type)}`}>
+                      <span className={`font-bold ${
+                        isCompleted ? 'text-green-400' :
+                        isSkipped ? 'text-red-400/70' :
+                        today ? 'text-accent-primary' :
+                        getWorkoutColor(day.workout_type)
+                      }`}>
                         {date.getDate()}
                       </span>
-                      <span className={`text-sm font-medium leading-tight ${getWorkoutColor(day.workout_type)} opacity-80 hidden sm:block`}>
+                      <span className={`text-sm font-medium leading-tight opacity-80 hidden sm:block ${
+                        isSkipped ? 'text-red-400/50 line-through' : getWorkoutColor(day.workout_type)
+                      }`}>
                         {t(`workoutTypes.${day.workout_type}`)}
                       </span>
-                      {dayLog && (
-                        <div className="absolute top-0.5 right-0.5">
-                          {dayLog.status === 'completed' ? (
-                            <Check className="w-3 h-3 text-green-400" />
-                          ) : (
-                            <X className="w-3 h-3 text-red-400" />
-                          )}
-                        </div>
-                      )}
                     </button>
                   )
                 }

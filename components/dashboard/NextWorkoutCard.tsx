@@ -46,19 +46,19 @@ export default function NextWorkoutCard({ workout }: NextWorkoutCardProps) {
         </span>
 
         <div className="flex items-center gap-3 mt-2">
-          {workout.distance_km && (
+          {workout.distance_km != null && (
             <span className="flex items-center gap-1 text-sm text-text-secondary">
               <Ruler className="w-3.5 h-3.5" />
               {workout.distance_km} km
             </span>
           )}
-          {workout.duration_minutes && (
+          {workout.duration_minutes != null && (
             <span className="flex items-center gap-1 text-sm text-text-secondary">
               <Clock className="w-3.5 h-3.5" />
               {workout.duration_minutes} min
             </span>
           )}
-          {workout.target_pace && (
+          {workout.target_pace != null && (
             <span className="flex items-center gap-1 text-sm text-text-secondary">
               <Gauge className="w-3.5 h-3.5" />
               {workout.target_pace}
