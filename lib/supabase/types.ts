@@ -137,3 +137,28 @@ export interface TrainingDayInsert {
   cooldown?: string
   notes?: string
 }
+
+// Workout log types
+export type CompletionFeedback = 'FELT_EASY' | 'FELT_ADEQUATE' | 'FELT_HARD'
+export type SkipReason = 'TOO_TIRED' | 'INJURY' | 'NO_TIME' | 'TOO_HARD' | 'WEATHER' | 'SICK' | 'OTHER'
+export type WorkoutLogStatus = 'completed' | 'skipped'
+
+export interface WorkoutLogRow {
+  id: string
+  training_day_id: string
+  user_id: string
+  status: WorkoutLogStatus
+  completion_feedback: CompletionFeedback | null
+  skip_reason: SkipReason | null
+  created_at: string
+}
+
+export interface WorkoutAdjustment {
+  training_day_id: string
+  workout_type?: WorkoutType
+  title?: string
+  description?: string
+  distance_km?: number | null
+  duration_minutes?: number | null
+  target_pace?: string | null
+}

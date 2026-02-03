@@ -3,22 +3,24 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useLocale } from 'next-intl'
-import type { TrainingPlanRow, TrainingDayRow } from '@/lib/supabase/types'
+import type { TrainingPlanRow, TrainingDayRow, WorkoutLogRow } from '@/lib/supabase/types'
 import { getWeekDays, getWorkoutBgColor, getDayName, isToday } from '@/lib/plan/utils'
 import WorkoutDetail from './WorkoutDetail'
 import RestDayCard from './RestDayCard'
-import { ChevronLeft, ChevronRight, Moon } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Moon, Check, X } from 'lucide-react'
 
 interface WeeklyViewProps {
   plan: TrainingPlanRow
   days: TrainingDayRow[]
+  logs: WorkoutLogRow[]
+  initialDate?: string
 }
 
-export default function WeeklyView({ plan, days }: WeeklyViewProps) {
+export default function WeeklyView({ plan, days, logs, initialDate }: WeeklyViewProps) {
   const [weekOffset, setWeekOffset] = useState(() => {
-    const today = new Date()
+    const target = initialDate ? new Date(initialDate + 'T00:00:00') : new Date()
     const start = new Date(plan.starts_at + 'T00:00:00')
-    const diffDays = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+    const diffDays = Math.floor((target.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
     return Math.max(0, Math.min(Math.floor(diffDays / 7), 3))
   })
 
@@ -27,8 +29,12 @@ export default function WeeklyView({ plan, days }: WeeklyViewProps) {
 
   const weekDays = getWeekDays(days, plan.starts_at, weekOffset)
 
-  // Auto-select today if it's in this week, otherwise the first training day
+  // Use initialDate if provided, otherwise auto-select today or first training day
   const [selectedDate, setSelectedDate] = useState<string>(() => {
+    if (initialDate) {
+      const match = weekDays.find(wd => wd.date.toISOString().split('T')[0] === initialDate && wd.inPlan)
+      if (match) return initialDate
+    }
     const todayEntry = weekDays.find(wd => isToday(wd.date) && wd.inPlan)
     if (todayEntry) return todayEntry.date.toISOString().split('T')[0]
     const firstTraining = weekDays.find(wd => wd.day && wd.inPlan)
@@ -93,6 +99,7 @@ export default function WeeklyView({ plan, days }: WeeklyViewProps) {
           const dateStr = date.toISOString().split('T')[0]
           const today = isToday(date)
           const isSelected = selectedDate === dateStr
+          const dayLog = day ? logs.find(l => l.training_day_id === day.id) : null
 
           return (
             <button
@@ -100,7 +107,7 @@ export default function WeeklyView({ plan, days }: WeeklyViewProps) {
               onClick={() => inPlan && setSelectedDate(dateStr)}
               disabled={!inPlan}
               className={`
-                flex flex-col items-center p-2 rounded-lg transition-all text-center
+                relative flex flex-col items-center p-2 rounded-lg transition-all text-center
                 ${!inPlan ? 'opacity-30 cursor-default' : 'cursor-pointer'}
                 ${today ? 'ring-2 ring-accent-primary' : ''}
                 ${isSelected ? 'bg-dark-border' : inPlan ? 'hover:bg-dark-border/50' : ''}
@@ -117,6 +124,16 @@ export default function WeeklyView({ plan, days }: WeeklyViewProps) {
               ) : (
                 <Moon className="w-2 h-2 mt-1.5 text-dark-muted" />
               )}
+              {/* Log status overlay */}
+              {dayLog && (
+                <div className="absolute top-0.5 right-0.5">
+                  {dayLog.status === 'completed' ? (
+                    <Check className="w-3 h-3 text-green-400" />
+                  ) : (
+                    <X className="w-3 h-3 text-red-400" />
+                  )}
+                </div>
+              )}
             </button>
           )
         })}
@@ -129,7 +146,10 @@ export default function WeeklyView({ plan, days }: WeeklyViewProps) {
             <h4 className="text-lg font-semibold text-text-primary mb-3">
               {selectedDay.day.title}
             </h4>
-            <WorkoutDetail day={selectedDay.day} />
+            <WorkoutDetail
+              day={selectedDay.day}
+              log={logs.find(l => l.training_day_id === selectedDay.day!.id)}
+            />
           </div>
         ) : (
           <RestDayCard />

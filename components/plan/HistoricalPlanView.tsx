@@ -58,7 +58,7 @@ export default function HistoricalPlanView({ plan, onBack }: HistoricalPlanViewP
           <div className="w-6 h-6 border-2 border-accent-primary border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
-        <MonthlyCalendar plan={plan} days={days} />
+        <MonthlyCalendar plan={plan} days={days} logs={[]} />
       )}
     </div>
   )

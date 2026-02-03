@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Header from '@/components/Header'
 import WeeklyView from '@/components/plan/WeeklyView'
@@ -24,6 +25,8 @@ export default function PlanPageContent({
   initialLogs,
 }: PlanPageContentProps) {
   const t = useTranslations('plan')
+  const searchParams = useSearchParams()
+  const initialDate = searchParams.get('date') ?? undefined
   const [activeTab, setActiveTab] = useState<Tab>('week')
 
   const plan = initialPlan
@@ -84,7 +87,7 @@ export default function PlanPageContent({
               <p className="text-text-muted text-center py-8">{t('noPlan.message')}</p>
             )}
             {plan && activeTab === 'week' && (
-              <WeeklyView plan={plan} days={days} logs={logs} />
+              <WeeklyView plan={plan} days={days} logs={logs} initialDate={initialDate} />
             )}
             {plan && activeTab === 'month' && (
               <MonthlyCalendar plan={plan} days={days} logs={logs} />

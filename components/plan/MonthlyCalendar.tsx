@@ -3,15 +3,16 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useLocale } from 'next-intl'
-import type { TrainingPlanRow, TrainingDayRow } from '@/lib/supabase/types'
+import type { TrainingPlanRow, TrainingDayRow, WorkoutLogRow } from '@/lib/supabase/types'
 import type { WorkoutType } from '@/lib/supabase/types'
 import { getWorkoutBgColor, getWorkoutBgLight, getWorkoutColor, isToday } from '@/lib/plan/utils'
 import WorkoutDetail from './WorkoutDetail'
-import { Moon } from 'lucide-react'
+import { Moon, Check, X } from 'lucide-react'
 
 interface MonthlyCalendarProps {
   plan: TrainingPlanRow
   days: TrainingDayRow[]
+  logs: WorkoutLogRow[]
 }
 
 function getCalendarBg(type: WorkoutType): string {
@@ -27,7 +28,7 @@ function getCalendarBg(type: WorkoutType): string {
   return colors[type] ?? 'bg-dark-border'
 }
 
-export default function MonthlyCalendar({ plan, days }: MonthlyCalendarProps) {
+export default function MonthlyCalendar({ plan, days, logs }: MonthlyCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const t = useTranslations('plan')
   const locale = useLocale()
@@ -98,13 +99,14 @@ export default function MonthlyCalendar({ plan, days }: MonthlyCalendarProps) {
                 const isSelected = selectedDate === dateStr
 
                 if (day) {
+                  const dayLog = logs.find(l => l.training_day_id === day.id)
                   // Training day — colored block
                   return (
                     <button
                       key={dateStr}
                       onClick={() => setSelectedDate(isSelected ? null : dateStr)}
                       className={`
-                        aspect-square rounded-lg ${getCalendarBg(day.workout_type)}
+                        relative aspect-square rounded-lg ${getCalendarBg(day.workout_type)}
                         flex flex-col items-center justify-center gap-0.5
                         transition-all hover:scale-105 hover:shadow-lg cursor-pointer
                         ${today ? 'ring-2 ring-accent-primary' : ''}
@@ -118,6 +120,15 @@ export default function MonthlyCalendar({ plan, days }: MonthlyCalendarProps) {
                       <span className={`text-sm font-medium leading-tight ${getWorkoutColor(day.workout_type)} opacity-80 hidden sm:block`}>
                         {t(`workoutTypes.${day.workout_type}`)}
                       </span>
+                      {dayLog && (
+                        <div className="absolute top-0.5 right-0.5">
+                          {dayLog.status === 'completed' ? (
+                            <Check className="w-3 h-3 text-green-400" />
+                          ) : (
+                            <X className="w-3 h-3 text-red-400" />
+                          )}
+                        </div>
+                      )}
                     </button>
                   )
                 }
@@ -169,7 +180,10 @@ export default function MonthlyCalendar({ plan, days }: MonthlyCalendarProps) {
               <h4 className="text-lg font-semibold text-text-primary mb-3">
                 {selectedDay.day.title}
               </h4>
-              <WorkoutDetail day={selectedDay.day} />
+              <WorkoutDetail
+                day={selectedDay.day}
+                log={logs.find(l => l.training_day_id === selectedDay.day!.id)}
+              />
             </div>
           ) : (
             <div className="text-center py-4">

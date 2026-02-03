@@ -37,13 +37,13 @@ export default function NextWorkoutCard({ workout }: NextWorkoutCardProps) {
           </span>
         </div>
 
+        <h3 className="text-lg font-semibold text-text-primary mb-2">
+          {workout.title}
+        </h3>
+
         <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium ${getWorkoutBgLight(workout.workout_type)} ${getWorkoutColor(workout.workout_type)}`}>
           {tPlan(`workoutTypes.${workout.workout_type}`)}
         </span>
-
-        <h3 className="text-lg font-semibold text-text-primary mt-2">
-          {workout.title}
-        </h3>
 
         <div className="flex items-center gap-3 mt-2">
           {workout.distance_km && (

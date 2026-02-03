@@ -18,7 +18,7 @@ export async function GET() {
       .single()
 
     if (!plan) {
-      return NextResponse.json({ plan: null, days: [] })
+      return NextResponse.json({ plan: null, days: [], logs: [] })
     }
 
     const { data: days } = await supabase
@@ -27,7 +27,18 @@ export async function GET() {
       .eq('plan_id', plan.id)
       .order('day_number')
 
-    return NextResponse.json({ plan, days: days ?? [] })
+    const dayIds = (days ?? []).map((d: { id: string }) => d.id)
+    let logs: unknown[] = []
+    if (dayIds.length > 0) {
+      const { data: logsData } = await supabase
+        .from('workout_logs')
+        .select('*')
+        .in('training_day_id', dayIds)
+
+      logs = logsData ?? []
+    }
+
+    return NextResponse.json({ plan, days: days ?? [], logs })
   } catch (error) {
     console.error('Plan fetch error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
