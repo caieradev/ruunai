@@ -11,7 +11,7 @@ import Button from '@/components/ui/Button'
 import { Mail } from 'lucide-react'
 
 interface AuthFormProps {
-  mode: 'login' | 'signup'
+  mode: 'login' | 'signup' | 'forgot'
   redirectTo?: string
 }
 
@@ -19,7 +19,7 @@ const STORAGE_KEY = 'ruunai_onboarding_data'
 const STEP_KEY = 'ruunai_onboarding_step'
 
 export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: AuthFormProps) {
-  const [mode, setMode] = useState<'login' | 'signup'>(initialMode)
+  const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>(initialMode)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -47,6 +47,23 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
     setError(null)
 
     const supabase = getSupabaseBrowserClient()
+
+    if (mode === 'forgot') {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/callback?next=/auth/reset-password`,
+      })
+
+      if (error) {
+        setError(error.message)
+        setLoading(false)
+        return
+      }
+
+      setShowCheckEmail(true)
+      setResendCooldown(60)
+      setLoading(false)
+      return
+    }
 
     if (mode === 'signup') {
       if (!fullName.trim()) {
@@ -136,13 +153,23 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
     setError(null)
 
     const supabase = getSupabaseBrowserClient()
-    const { error } = await supabase.auth.resend({
-      type: 'signup',
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/confirm`,
-      },
-    })
+
+    let error: Error | null = null
+    if (mode === 'forgot') {
+      const result = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/callback?next=/auth/reset-password`,
+      })
+      error = result.error
+    } else {
+      const result = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/confirm`,
+        },
+      })
+      error = result.error
+    }
 
     if (error) {
       setError(error.message)
@@ -153,7 +180,7 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
     setLoading(false)
   }
 
-  const switchMode = (newMode: 'login' | 'signup') => {
+  const switchMode = (newMode: 'login' | 'signup' | 'forgot') => {
     setMode(newMode)
     setError(null)
     setShowCheckEmail(false)
@@ -168,12 +195,15 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
             <Mail className="w-8 h-8 text-accent-primary" />
           </div>
         </div>
-        <h2 className="text-2xl font-bold text-text-primary mb-2">{t('checkEmail')}</h2>
+        <h2 className="text-2xl font-bold text-text-primary mb-2">
+          {mode === 'forgot' ? t('resetLinkSent') : t('checkEmail')}
+        </h2>
         <p className="text-text-secondary mb-2">
-          {t('sentConfirmation')} <strong className="text-text-primary">{email}</strong>
+          {mode === 'forgot' ? t('resetLinkSentDescription') : t('sentConfirmation')}{' '}
+          <strong className="text-text-primary">{email}</strong>
         </p>
         <p className="text-sm text-text-muted mb-6">
-          {t('clickLink')}
+          {mode === 'forgot' ? t('resetLinkSentHint') : t('clickLink')}
         </p>
 
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
@@ -188,10 +218,16 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
         </Button>
 
         <button
-          onClick={() => setShowCheckEmail(false)}
+          onClick={() => {
+            if (mode === 'forgot') {
+              switchMode('login')
+            } else {
+              setShowCheckEmail(false)
+            }
+          }}
           className="mt-4 text-sm text-text-muted hover:text-text-secondary transition-colors"
         >
-          {t('useDifferentEmail')}
+          {mode === 'forgot' ? t('backToLogin') : t('useDifferentEmail')}
         </button>
       </Card>
     )
@@ -201,10 +237,18 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
     <Card>
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-text-primary mb-2">
-          {mode === 'signup' ? t('createYourAccount') : t('welcomeBack')}
+          {mode === 'forgot'
+            ? t('resetPassword')
+            : mode === 'signup'
+              ? t('createYourAccount')
+              : t('welcomeBack')}
         </h1>
         <p className="text-text-secondary">
-          {mode === 'signup' ? t('saveYourPlan') : t('loginToAccess')}
+          {mode === 'forgot'
+            ? t('resetPasswordDescription')
+            : mode === 'signup'
+              ? t('saveYourPlan')
+              : t('loginToAccess')}
         </p>
       </div>
 
@@ -229,14 +273,30 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
           required
         />
 
-        <Input
-          type="password"
-          label={t('password')}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder={mode === 'signup' ? t('passwordPlaceholderCreate') : t('passwordPlaceholderEnter')}
-          required
-        />
+        {mode !== 'forgot' && (
+          <>
+            <Input
+              type="password"
+              label={t('password')}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder={mode === 'signup' ? t('passwordPlaceholderCreate') : t('passwordPlaceholderEnter')}
+              required
+            />
+
+            {mode === 'login' && (
+              <div className="-mt-4">
+                <button
+                  type="button"
+                  onClick={() => switchMode('forgot')}
+                  className="text-sm text-text-muted hover:text-accent-primary transition-colors"
+                >
+                  {t('forgotPassword')}
+                </button>
+              </div>
+            )}
+          </>
+        )}
 
         {mode === 'signup' && (
           <Input
@@ -252,13 +312,26 @@ export default function AuthForm({ mode: initialMode, redirectTo = '/app' }: Aut
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <Button type="submit" className="w-full" size="lg" disabled={loading}>
-          {loading ? t('loading') : mode === 'signup' ? t('createAccount') : t('logIn')}
+          {loading
+            ? t('loading')
+            : mode === 'forgot'
+              ? t('sendResetLink')
+              : mode === 'signup'
+                ? t('createAccount')
+                : t('logIn')}
         </Button>
       </form>
 
       <div className="mt-6 text-center">
         <p className="text-sm text-text-secondary">
-          {mode === 'signup' ? (
+          {mode === 'forgot' ? (
+            <button
+              onClick={() => switchMode('login')}
+              className="text-accent-primary hover:text-accent-hover transition-colors"
+            >
+              {t('backToLogin')}
+            </button>
+          ) : mode === 'signup' ? (
             <>
               {t('alreadyHaveAccount')}{' '}
               <button

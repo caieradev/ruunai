@@ -71,6 +71,7 @@ export interface StepConfig {
   id: StepId
   title: string
   description: string
+  isOptional?: boolean
   isConditional?: boolean
   shouldShow?: (data: OnboardingData) => boolean
 }

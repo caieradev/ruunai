@@ -29,7 +29,23 @@
     "clickLink": "Click the link in your email to activate your account. Also check your spam folder.",
     "resendIn": "Resend in {seconds}s",
     "resendEmail": "Resend email",
-    "useDifferentEmail": "Use a different email"
+    "useDifferentEmail": "Use a different email",
+    "forgotPassword": "Forgot password?",
+    "resetPassword": "Reset Password",
+    "resetPasswordDescription": "Enter your email and we'll send you a link to reset your password.",
+    "sendResetLink": "Send Reset Link",
+    "resetLinkSent": "Check your email",
+    "resetLinkSentDescription": "We sent a password reset link to",
+    "resetLinkSentHint": "Click the link in your email to set a new password. Also check your spam folder.",
+    "backToLogin": "Back to login",
+    "resetPasswordTitle": "Set New Password",
+    "resetPasswordPageDescription": "Enter your new password below.",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "setNewPassword": "Set New Password",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "passwordUpdated": "Password updated!",
+    "passwordUpdatedDescription": "Your password has been updated. Redirecting..."
   },
   "welcome": {
     "tagline": "Your AI-powered running coach. Personalized training plans tailored to your goals.",
@@ -44,7 +60,7 @@
       },
       "eventDetails": {
         "title": "Tell us about your event",
-        "description": "Optional: Add your event date and target time"
+        "description": "Add your event date and target time"
       },
       "experience": {
         "title": "What's your experience level?",
@@ -68,7 +84,7 @@
       },
       "preferredDays": {
         "title": "Preferred training days",
-        "description": "Optional: Choose which days work best for you"
+        "description": "Choose which days work best for you"
       },
       "longestRun": {
         "title": "Longest recent run",
@@ -80,7 +96,7 @@
       },
       "equipment": {
         "title": "What equipment do you have?",
-        "description": "Optional: Tell us about your training environment"
+        "description": "Tell us about your training environment"
       },
       "planPreferences": {
         "title": "Training plan preferences",
@@ -91,6 +107,7 @@
         "description": "Confirm your information before we generate your plan"
       }
     },
+    "optionalBadge": "OPTIONAL",
     "navigation": {
       "back": "Back",
       "next": "Next",
@@ -160,7 +177,7 @@
       "saturday": "Saturday",
       "sunday": "Sunday"
     },
-    "preferredDaysHint": "Select your preferred training days. This is optional and flexible.",
+    "preferredDaysHint": "Select your preferred training days. This is <highlight>optional</highlight> and flexible.",
     "injuries": {
       "none": "No injuries",
       "noneDesc": "Currently injury-free",
@@ -185,23 +202,23 @@
       "gymDesc": "Gym membership for cross-training",
       "hills": "Hills/Trails",
       "hillsDesc": "Access to varied terrain",
-      "hint": "This is optional. We can create a great plan with just outdoor running."
+      "hint": "This is <highlight>optional</highlight>. We can create a great plan with just outdoor running."
     },
     "eventDetails": {
-      "eventDate": "Event Date (Optional)",
+      "eventDate": "Event Date <highlight>(Optional)</highlight>",
       "eventDatePlaceholder": "Select your race date",
-      "targetTime": "Target Time (Optional)",
+      "targetTime": "Target Time <highlight>(Optional)</highlight>",
       "targetTimePlaceholder": "e.g., 50:00 or 1:30:25",
-      "targetPace": "Target Pace (Optional)",
+      "targetPace": "Target Pace <highlight>(Optional)</highlight>",
       "targetPacePlaceholder": "e.g., 5:30/km",
       "hint": "These details help us create a plan that peaks at the right time."
     },
     "advancedFitness": {
-      "recent5k": "Recent Best 5K Time (Optional)",
+      "recent5k": "Recent Best 5K Time <highlight>(Optional)</highlight>",
       "recent5kPlaceholder": "e.g., 22:30",
-      "recent10k": "Recent Best 10K Time (Optional)",
+      "recent10k": "Recent Best 10K Time <highlight>(Optional)</highlight>",
       "recent10kPlaceholder": "e.g., 48:00",
-      "recentEasyPace": "Recent Easy Pace (Optional)",
+      "recentEasyPace": "Recent Easy Pace <highlight>(Optional)</highlight>",
       "recentEasyPacePlaceholder": "e.g., 5:30/km",
       "hint": "This helps us calibrate your training zones for optimal performance."
     },
@@ -347,7 +364,61 @@
       "message": "Your plan ended on {date}.",
       "generate": "Generate New Plan"
     },
-    "comingSoonPage": "Coming soon"
+    "comingSoonPage": "Coming soon",
+    "settings": "Settings"
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": {
+      "title": "Profile",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailHint": "A confirmation email will be sent to the new address.",
+      "save": "Save",
+      "saved": "Saved!",
+      "updateEmail": "Update Email",
+      "emailUpdateSent": "Confirmation email sent to the new address."
+    },
+    "security": {
+      "title": "Security",
+      "currentPassword": "Current Password",
+      "currentPasswordPlaceholder": "Enter your current password",
+      "newPassword": "New Password",
+      "newPasswordPlaceholder": "Enter a new password (min 6 characters)",
+      "confirmNewPassword": "Confirm New Password",
+      "confirmNewPasswordPlaceholder": "Confirm your new password",
+      "changePassword": "Change Password",
+      "passwordChanged": "Password changed!",
+      "wrongPassword": "Current password is incorrect."
+    },
+    "preferences": {
+      "title": "Training Preferences",
+      "goal": "Goal",
+      "experience": "Experience",
+      "daysPerWeek": "Days/Week",
+      "weeklyVolume": "Weekly Volume",
+      "planStyle": "Plan Style",
+      "updatePreferences": "Update Preferences",
+      "updateConfirm": "This will reset your onboarding data and redirect you to fill it again. Continue?",
+      "confirmButton": "Continue",
+      "cancelButton": "Cancel"
+    },
+    "account": {
+      "title": "Account",
+      "logOut": "Log Out"
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "description": "Permanently delete your account and all associated data. This action cannot be undone.",
+      "deleteAccount": "Delete Account",
+      "deleteConfirm": "Are you sure you want to permanently delete your account? All your data, training plans, and workout history will be lost.",
+      "continueDelete": "Continue",
+      "cancel": "Cancel",
+      "finalTitle": "Are you sure?",
+      "deleteConfirmFinal": "This is your last chance. This action is irreversible and cannot be undone.",
+      "deleteError": "Failed to delete account. Please try again."
+    }
   },
   "common": {
     "yes": "Yes",
@@ -356,7 +427,8 @@
     "error": "Error",
     "runner": "Runner",
     "stepOf": "Step {current} of {total}",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "or": "OR"
   },
   "inputs": {
     "time": {

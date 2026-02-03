@@ -40,7 +40,6 @@ import {
 } from '@/lib/plan/utils'
 import {
   Plus,
-  LogOut,
   Settings,
   AlertCircle,
 } from 'lucide-react'
@@ -71,8 +70,6 @@ export default function DashboardContent({
   const [logs, setLogs] = useState<WorkoutLogRow[]>(initialLogs)
   const [flowState, setFlowState] = useState<FlowState>('idle')
   const [generationError, setGenerationError] = useState<string | null>(null)
-  const [loading, setLoading] = useState<'reset' | 'logout' | null>(null)
-
   // Modal state
   const [showGenerateModal, setShowGenerateModal] = useState(false)
   const [showCompletionModal, setShowCompletionModal] = useState(false)
@@ -264,39 +261,6 @@ export default function DashboardContent({
     setPendingSuggestions([])
   }, [])
 
-  const handleResetOnboarding = async () => {
-    if (!confirm(t('resetConfirm'))) return
-    setLoading('reset')
-    try {
-      const response = await fetch('/api/onboarding/clear_responses', { method: 'POST' })
-      if (response.ok) {
-        localStorage.removeItem('ruunai_onboarding_data')
-        localStorage.removeItem('ruunai_onboarding_step')
-        router.push('/onboarding')
-      }
-    } catch (error) {
-      console.error('Failed to reset onboarding:', error)
-    } finally {
-      setLoading(null)
-    }
-  }
-
-  const handleLogout = async () => {
-    setLoading('logout')
-    try {
-      const response = await fetch('/api/auth/logout', { method: 'POST' })
-      if (response.ok) {
-        localStorage.removeItem('ruunai_onboarding_data')
-        localStorage.removeItem('ruunai_onboarding_step')
-        router.push('/login')
-      }
-    } catch (error) {
-      console.error('Failed to logout:', error)
-    } finally {
-      setLoading(null)
-    }
-  }
-
   const displayName = fullName || tCommon('runner')
 
   // Loading state — full screen loader
@@ -344,13 +308,22 @@ export default function DashboardContent({
       <main className="min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Welcome header */}
-          <div className="animate-fade-in">
-            <h1 className="text-2xl sm:text-3xl font-bold text-text-primary mb-1">
-              {t('welcomeBack')} <span className="gradient-text">{displayName}</span>
-            </h1>
-            {plan && !planExpired && (
-              <p className="text-sm text-text-secondary">{plan.title}</p>
-            )}
+          <div className="animate-fade-in flex items-start justify-between">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-text-primary mb-1">
+                {t('welcomeBack')} <span className="gradient-text">{displayName}</span>
+              </h1>
+              {plan && !planExpired && (
+                <p className="text-sm text-text-secondary">{plan.title}</p>
+              )}
+            </div>
+            <button
+              onClick={() => router.push('/app/settings')}
+              className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-dark-surface transition-colors shrink-0"
+              aria-label={t('settings')}
+            >
+              <Settings className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Expired plan banner */}
@@ -423,37 +396,6 @@ export default function DashboardContent({
             <AchievementsCard achievements={achievements} />
           )}
 
-          {/* Quick actions */}
-          <div className="rounded-xl border border-dark-border bg-dark-surface p-4 sm:p-6 animate-slide-up">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-lg bg-dark-border shrink-0">
-                <Settings className="w-5 h-5 text-accent-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-semibold text-text-primary mb-3">{t('quickActions')}</h3>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleResetOnboarding}
-                    disabled={loading === 'reset'}
-                  >
-                    {loading === 'reset' ? t('resetting') : t('resetOnboarding')}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleLogout}
-                    disabled={loading === 'logout'}
-                    className="text-red-400 border-red-400/50 hover:bg-red-400/10"
-                  >
-                    <LogOut className="w-4 h-4 mr-1" />
-                    {loading === 'logout' ? t('loggingOut') : t('logOut')}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </main>
 

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { useLocale } from 'next-intl'
 import { useOnboarding } from '@/lib/onboarding/context'
-import { getStepNumber, getTotalSteps, getNextStep, getPreviousStep } from '@/lib/onboarding/steps'
+import { getStepNumber, getTotalSteps, getNextStep, getPreviousStep, isStepOptional } from '@/lib/onboarding/steps'
 import { StepId } from '@/lib/onboarding/types'
 import Button from '@/components/ui/Button'
 import ProgressBar from '@/components/ui/ProgressBar'
@@ -284,6 +284,11 @@ export default function OnboardingFlow() {
                 {t(`steps.${stepKey}.title`)}
               </h1>
               <p className="text-text-secondary">
+                {isStepOptional(currentStep) && (
+                  <span className="inline-block mr-2 px-2 py-0.5 text-xs font-bold tracking-wide rounded bg-accent-primary text-dark-bg">
+                    {t('optionalBadge')}
+                  </span>
+                )}
                 {t(`steps.${stepKey}.description`)}
               </p>
             </div>

@@ -1,9 +1,9 @@
 import { cn } from '@/lib/utils'
-import { InputHTMLAttributes } from 'react'
+import { InputHTMLAttributes, ReactNode } from 'react'
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string
-  label?: string
+  label?: ReactNode
 }
 
 export default function Input({ error, label, className, ...props }: InputProps) {

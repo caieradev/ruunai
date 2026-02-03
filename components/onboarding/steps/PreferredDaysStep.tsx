@@ -32,7 +32,9 @@ export default function PreferredDaysStep() {
         )
       })}
       <p className="text-sm text-text-muted mt-6">
-        {t('preferredDaysHint')}
+        {t.rich('preferredDaysHint', {
+          highlight: (chunks) => <span className="text-accent-primary font-semibold">{chunks}</span>
+        })}
       </p>
     </div>
   )

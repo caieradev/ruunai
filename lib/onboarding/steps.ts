@@ -10,6 +10,7 @@ export const ONBOARDING_STEPS: StepConfig[] = [
     id: 'event-details',
     title: 'Tell us about your event',
     description: 'Optional: Add your event date and target time',
+    isOptional: true,
     isConditional: true,
     shouldShow: (data) => data.goal !== 'GENERAL_FITNESS',
   },
@@ -46,6 +47,7 @@ export const ONBOARDING_STEPS: StepConfig[] = [
     id: 'preferred-days',
     title: 'Preferred training days',
     description: 'Optional: Choose which days work best for you',
+    isOptional: true,
   },
   {
     id: 'longest-run',
@@ -61,6 +63,7 @@ export const ONBOARDING_STEPS: StepConfig[] = [
     id: 'equipment',
     title: 'What equipment do you have access to?',
     description: 'Optional: Tell us about your training environment',
+    isOptional: true,
   },
   {
     id: 'plan-preferences',
@@ -78,6 +81,11 @@ export function getVisibleSteps(data: OnboardingData): StepConfig[] {
   return ONBOARDING_STEPS.filter(
     (step) => !step.isConditional || (step.shouldShow && step.shouldShow(data))
   )
+}
+
+export function isStepOptional(stepId: StepId): boolean {
+  const step = ONBOARDING_STEPS.find((s) => s.id === stepId)
+  return step?.isOptional ?? false
 }
 
 export function getStepNumber(stepId: StepId, data: OnboardingData): number {

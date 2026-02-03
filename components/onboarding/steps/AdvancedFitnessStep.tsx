@@ -9,22 +9,26 @@ export default function AdvancedFitnessStep() {
   const { data, updateData } = useOnboarding()
   const t = useTranslations('onboarding.advancedFitness')
 
+  const highlight = (chunks: React.ReactNode) => (
+    <span className="text-accent-primary font-semibold">{chunks}</span>
+  )
+
   return (
     <div className="space-y-6">
       <TimeInput
-        label={t('recent5k')}
+        label={t.rich('recent5k', { highlight })}
         value={data.recentBest5K || ''}
         onChange={(value) => updateData({ recentBest5K: value })}
         placeholder={t('recent5kPlaceholder')}
       />
       <TimeInput
-        label={t('recent10k')}
+        label={t.rich('recent10k', { highlight })}
         value={data.recentBest10K || ''}
         onChange={(value) => updateData({ recentBest10K: value })}
         placeholder={t('recent10kPlaceholder')}
       />
       <PaceInput
-        label={t('recentEasyPace')}
+        label={t.rich('recentEasyPace', { highlight })}
         value={data.recentEasyPace || ''}
         onChange={(value) => updateData({ recentEasyPace: value })}
         placeholder={t('recentEasyPacePlaceholder')}

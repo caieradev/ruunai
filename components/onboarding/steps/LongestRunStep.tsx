@@ -35,7 +35,7 @@ export default function LongestRunStep() {
           onChange={(e) => handleCheckboxChange(e.target.checked)}
           className="w-5 h-5 rounded accent-accent-primary focus-ring cursor-pointer"
         />
-        <span className="text-sm text-text-secondary">
+        <span className="text-sm text-accent-primary font-semibold">
           {t('noRecentRun')}
         </span>
       </label>

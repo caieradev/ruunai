@@ -9,9 +9,13 @@ import { InjuryType } from '@/lib/onboarding/types'
 export default function InjuriesStep() {
   const { data, updateData } = useOnboarding()
   const t = useTranslations('onboarding.injuries')
+  const tCommon = useTranslations('common')
+
+  const noneOption = [
+    { value: 'NONE', label: t('none'), description: t('noneDesc') },
+  ]
 
   const injuryOptions = [
-    { value: 'NONE', label: t('none'), description: t('noneDesc') },
     { value: 'KNEE', label: t('knee'), description: t('kneeDesc') },
     { value: 'SHIN', label: t('shin'), description: t('shinDesc') },
     { value: 'FOOT', label: t('foot'), description: t('footDesc') },
@@ -39,6 +43,19 @@ export default function InjuriesStep() {
 
   return (
     <div className="space-y-6">
+      <CheckboxGroup
+        options={noneOption}
+        value={data.injuryTypes || []}
+        onChange={handleInjuryChange}
+        name="injuries"
+      />
+
+      <div className="flex items-center gap-3">
+        <div className="flex-1 h-px bg-dark-border" />
+        <span className="text-xs font-semibold tracking-wider text-accent-primary uppercase">{tCommon('or')}</span>
+        <div className="flex-1 h-px bg-dark-border" />
+      </div>
+
       <CheckboxGroup
         options={injuryOptions}
         value={data.injuryTypes || []}

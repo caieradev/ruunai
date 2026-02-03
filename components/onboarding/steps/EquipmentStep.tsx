@@ -35,7 +35,9 @@ export default function EquipmentStep() {
         />
       ))}
       <p className="text-sm text-text-muted mt-6">
-        {t('hint')}
+        {t.rich('hint', {
+          highlight: (chunks) => <span className="text-accent-primary font-semibold">{chunks}</span>
+        })}
       </p>
     </div>
   )

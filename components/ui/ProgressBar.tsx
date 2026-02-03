@@ -12,17 +12,19 @@ export default function ProgressBar({ current, total }: ProgressBarProps) {
   const t = useTranslations('common')
 
   return (
-    <div className="w-full">
-      <div className="flex justify-between mb-2 text-sm text-text-secondary">
-        <span>{t('stepOf', { current, total })}</span>
-        <span>{Math.round(percentage)}%</span>
-      </div>
-      <div className="h-2 bg-dark-border rounded-full overflow-hidden">
+    <div className="flex items-center gap-3 w-full">
+      <div className="flex-1 h-2 bg-dark-border rounded-full overflow-hidden">
         <div
-          className="h-full bg-accent-primary transition-all duration-300 ease-out"
-          style={{ width: `${percentage}%` }}
+          className="h-full rounded-full transition-all duration-500 ease-out"
+          style={{
+            width: `${percentage}%`,
+            background: 'repeating-linear-gradient(90deg, #00E5A0, #00c98a 25%, #00E5A0 50%)',
+            backgroundSize: '200% 100%',
+            animation: 'progress-flow 1.5s linear infinite',
+          }}
         />
       </div>
+      <span className="text-sm text-text-secondary tabular-nums">{Math.round(percentage)}%</span>
     </div>
   )
 }

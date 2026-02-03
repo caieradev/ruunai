@@ -29,7 +29,23 @@
     "clickLink": "Haz clic en el enlace en tu email para activar tu cuenta. Revisa también la carpeta de spam.",
     "resendIn": "Reenviar en {seconds}s",
     "resendEmail": "Reenviar email",
-    "useDifferentEmail": "Usar otro email"
+    "useDifferentEmail": "Usar otro email",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "resetPassword": "Restablecer Contraseña",
+    "resetPasswordDescription": "Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña.",
+    "sendResetLink": "Enviar Enlace de Restablecimiento",
+    "resetLinkSent": "Revisa tu email",
+    "resetLinkSentDescription": "Enviamos un enlace de restablecimiento de contraseña a",
+    "resetLinkSentHint": "Haz clic en el enlace en tu email para establecer una nueva contraseña. Revisa también la carpeta de spam.",
+    "backToLogin": "Volver al inicio de sesión",
+    "resetPasswordTitle": "Establecer Nueva Contraseña",
+    "resetPasswordPageDescription": "Ingresa tu nueva contraseña a continuación.",
+    "newPassword": "Nueva Contraseña",
+    "confirmNewPassword": "Confirmar Nueva Contraseña",
+    "setNewPassword": "Establecer Nueva Contraseña",
+    "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+    "passwordUpdated": "¡Contraseña actualizada!",
+    "passwordUpdatedDescription": "Tu contraseña ha sido actualizada. Redirigiendo..."
   },
   "welcome": {
     "tagline": "Tu entrenador de running con IA. Planes de entrenamiento personalizados para tus objetivos.",
@@ -44,7 +60,7 @@
       },
       "eventDetails": {
         "title": "Cuéntanos sobre tu evento",
-        "description": "Opcional: Agrega la fecha del evento y tiempo objetivo"
+        "description": "Agrega la fecha del evento y tiempo objetivo"
       },
       "experience": {
         "title": "¿Cuál es tu nivel de experiencia?",
@@ -68,7 +84,7 @@
       },
       "preferredDays": {
         "title": "Días preferidos para entrenar",
-        "description": "Opcional: Elige qué días te funcionan mejor"
+        "description": "Elige qué días te funcionan mejor"
       },
       "longestRun": {
         "title": "Carrera más larga reciente",
@@ -80,7 +96,7 @@
       },
       "equipment": {
         "title": "¿Qué equipamiento tienes?",
-        "description": "Opcional: Cuéntanos sobre tu ambiente de entrenamiento"
+        "description": "Cuéntanos sobre tu ambiente de entrenamiento"
       },
       "planPreferences": {
         "title": "Preferencias del plan de entrenamiento",
@@ -91,6 +107,7 @@
         "description": "Confirma tu información antes de generar tu plan"
       }
     },
+    "optionalBadge": "OPCIONAL",
     "navigation": {
       "back": "Atrás",
       "next": "Siguiente",
@@ -160,7 +177,7 @@
       "saturday": "Sábado",
       "sunday": "Domingo"
     },
-    "preferredDaysHint": "Selecciona tus días preferidos de entrenamiento. Esto es opcional y flexible.",
+    "preferredDaysHint": "Selecciona tus días preferidos de entrenamiento. Esto es <highlight>opcional</highlight> y flexible.",
     "injuries": {
       "none": "Sin lesiones",
       "noneDesc": "Actualmente sin lesiones",
@@ -185,23 +202,23 @@
       "gymDesc": "Membresía de gimnasio para cross-training",
       "hills": "Colinas/Senderos",
       "hillsDesc": "Acceso a terreno variado",
-      "hint": "Esto es opcional. Podemos crear un gran plan solo con correr al aire libre."
+      "hint": "Esto es <highlight>opcional</highlight>. Podemos crear un gran plan solo con correr al aire libre."
     },
     "eventDetails": {
-      "eventDate": "Fecha del Evento (Opcional)",
+      "eventDate": "Fecha del Evento <highlight>(Opcional)</highlight>",
       "eventDatePlaceholder": "Selecciona la fecha de tu carrera",
-      "targetTime": "Tiempo Objetivo (Opcional)",
+      "targetTime": "Tiempo Objetivo <highlight>(Opcional)</highlight>",
       "targetTimePlaceholder": "ej., 50:00 o 1:30:25",
-      "targetPace": "Ritmo Objetivo (Opcional)",
+      "targetPace": "Ritmo Objetivo <highlight>(Opcional)</highlight>",
       "targetPacePlaceholder": "ej., 5:30/km",
       "hint": "Estos detalles nos ayudan a crear un plan que alcance su pico en el momento correcto."
     },
     "advancedFitness": {
-      "recent5k": "Mejor Tiempo Reciente 5K (Opcional)",
+      "recent5k": "Mejor Tiempo Reciente 5K <highlight>(Opcional)</highlight>",
       "recent5kPlaceholder": "ej., 22:30",
-      "recent10k": "Mejor Tiempo Reciente 10K (Opcional)",
+      "recent10k": "Mejor Tiempo Reciente 10K <highlight>(Opcional)</highlight>",
       "recent10kPlaceholder": "ej., 48:00",
-      "recentEasyPace": "Ritmo Suave Reciente (Opcional)",
+      "recentEasyPace": "Ritmo Suave Reciente <highlight>(Opcional)</highlight>",
       "recentEasyPacePlaceholder": "ej., 5:30/km",
       "hint": "Esto nos ayuda a calibrar tus zonas de entrenamiento para un rendimiento óptimo."
     },
@@ -347,7 +364,61 @@
       "message": "Tu plan terminó el {date}.",
       "generate": "Generar Nuevo Plan"
     },
-    "comingSoonPage": "Próximamente"
+    "comingSoonPage": "Próximamente",
+    "settings": "Configuración"
+  },
+  "settings": {
+    "title": "Configuración",
+    "profile": {
+      "title": "Perfil",
+      "name": "Nombre",
+      "namePlaceholder": "Tu nombre",
+      "email": "Email",
+      "emailHint": "Se enviará un email de confirmación a la nueva dirección.",
+      "save": "Guardar",
+      "saved": "¡Guardado!",
+      "updateEmail": "Actualizar Email",
+      "emailUpdateSent": "Email de confirmación enviado a la nueva dirección."
+    },
+    "security": {
+      "title": "Seguridad",
+      "currentPassword": "Contraseña Actual",
+      "currentPasswordPlaceholder": "Ingresa tu contraseña actual",
+      "newPassword": "Nueva Contraseña",
+      "newPasswordPlaceholder": "Ingresa una nueva contraseña (mín 6 caracteres)",
+      "confirmNewPassword": "Confirmar Nueva Contraseña",
+      "confirmNewPasswordPlaceholder": "Confirma tu nueva contraseña",
+      "changePassword": "Cambiar Contraseña",
+      "passwordChanged": "¡Contraseña cambiada!",
+      "wrongPassword": "La contraseña actual es incorrecta."
+    },
+    "preferences": {
+      "title": "Preferencias de Entrenamiento",
+      "goal": "Objetivo",
+      "experience": "Experiencia",
+      "daysPerWeek": "Días/Semana",
+      "weeklyVolume": "Volumen Semanal",
+      "planStyle": "Estilo del Plan",
+      "updatePreferences": "Actualizar Preferencias",
+      "updateConfirm": "Esto reiniciará tus datos de registro y te redirigirá para llenarlos de nuevo. ¿Continuar?",
+      "confirmButton": "Continuar",
+      "cancelButton": "Cancelar"
+    },
+    "account": {
+      "title": "Cuenta",
+      "logOut": "Cerrar Sesión"
+    },
+    "dangerZone": {
+      "title": "Zona de Peligro",
+      "description": "Elimina permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.",
+      "deleteAccount": "Eliminar Cuenta",
+      "deleteConfirm": "¿Estás seguro de que deseas eliminar permanentemente tu cuenta? Todos tus datos, planes de entrenamiento e historial de entrenamientos se perderán.",
+      "continueDelete": "Continuar",
+      "cancel": "Cancelar",
+      "finalTitle": "¿Estás seguro?",
+      "deleteConfirmFinal": "Esta es tu última oportunidad. Esta acción es irreversible y no se puede deshacer.",
+      "deleteError": "Error al eliminar la cuenta. Inténtalo de nuevo."
+    }
   },
   "common": {
     "yes": "Sí",
@@ -356,7 +427,8 @@
     "error": "Error",
     "runner": "Corredor",
     "stepOf": "Paso {current} de {total}",
-    "tryAgain": "Intentar de Nuevo"
+    "tryAgain": "Intentar de Nuevo",
+    "or": "O"
   },
   "inputs": {
     "time": {
